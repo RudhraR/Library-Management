@@ -3,9 +3,9 @@ from flask import current_app as app
 from flask_login import login_user, LoginManager, login_required, logout_user, current_user
 from flask_bcrypt import Bcrypt
 
-from .model import db,User,Posts
+from .model import *
 
-#-------initiallize login manager--------------
+#-------initialize login manager--------------
 bcrypt = Bcrypt(app)
 login_manager = LoginManager()
 login_manager.init_app(app)
@@ -28,8 +28,9 @@ def register():
             return redirect("/login")
         else:
             password = request.form["password"]
+            name = request.form["user_name"]
             hashed_password = bcrypt.generate_password_hash(password)
-            new_user = User(email = email, password= hashed_password)
+            new_user = User(name=name, email = email, password= hashed_password, role= "User")
             db.session.add(new_user)
             db.session.commit()
             flash("You are now registered, Please Login")
@@ -44,11 +45,15 @@ def login():
         password =  request.form["password"]
         user =  User.query.filter_by(user_mail = email).first()
         if user:
-            if bcrypt.check_password_hash(user.password, password):
-                login_user(user)
-                return redirect('/')
+            if user.role != "Admin":
+                if bcrypt.check_password_hash(user.password, password):
+                    login_user(user)
+                    return redirect('/')
+                else:
+                    flash("Wrong Password, Please Login")
+                    return redirect("/login")
             else:
-                flash("Wrong Password, Please Login")
+                flash("You are not authorized to login as Admin.")
                 return redirect("/login")
         else:
             flash("You are not registered, Please register")
@@ -97,9 +102,6 @@ def edit_profile():
         db.session.commit()
         return redirect('/user_profile')
 
-        # print(user_name)
-        # print(user_bio)
-        # print(profile_pic.filename)
 
 @app.route("/add_post", methods=["GET","POST"])
 @login_required

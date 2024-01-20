@@ -3,25 +3,60 @@ from flask_login import UserMixin
 
 class User(db.Model,UserMixin):
     __tablename__=  "user"
-    user_id = db.Column(db.Integer, primary_key = True, autoincrement = True)
+    user_id = db.Column(db.Integer(), primary_key = True, autoincrement = True)
     user_mail =  db.Column(db.String(30), nullable = False, unique = True)
     user_name = db.Column(db.String())
     password = db.Column(db.String(80), nullable = False)
-    profile_img_path = db.Column(db.String(), default = "../static/images/user_profile_dummy.jpg")
-    user_bio = db.Column(db.String())
+    role = db.Column(db.String(20), nullable = False)
 
-    def __init__(self,email,password):
+    def __init__(self,name,email,password,role):
+        self.user_name = name
         self.user_mail = email
         self.password = password
-        self.user_name = email.split('@')[0]
-    
+        self.role = role
+        
     def get_id(self):
         return self.user_id
 
+class Book(db.Model):
+    __tablename__="book"
+    book_id = db.Column(db.Integer(), primary_key=True, autoincrement= True)   
+    book_name =  db.Column(db.String(80), nullable = False, unique = True)
+    book_desc = db.Column(db.String())
+    author = db.Column(db.String(80), nullable = False)
+    content = db.Column(db.String())
+    date_issued = db.Column(db.DateTime())
+    return_date = db.Column(db.DateTime())
+    price = db.Column(db.Float(), nullable=False)
+    section_id = db.Column(db.Integer(), db.ForeignKey('section.section_id'), nullable=False)
+    feedback = db.Column(db.String())
+    rating = db.Column(db.Float())
+    # book_image = db.Column(db.String())
+    # user_id = db.Column(db.Integer, db.ForeignKey('user.user_id'))
+
+class Section(db.Model):
+    __tablename__ = "section"
+    section_id = db.Column(db.Integer(), primary_key=True)
+    section_name = db.Column(db.String(40), nullable = False)
+    section_desc = db.Column(db.String())
+    books = db.relationship('Book', backref = 'section', lazy = True)
+
+class Cart(db.Model):
+    cart_id = db.Column(db.Integer(), primary_key=True)
+    user_id = db.Column(db.Integer(), db.ForeignKey('user.user_id'), nullable = False)
+    book_id = db.Column(db.Integer(), db.ForeignKey('book.book_id'), nullable = False)
+
+class Order(db.Model):
+    order_id = db.Column(db.Integer(), primary_key = True)
+    user_id = db.Column(db.Integer(), db.ForeignKey('user.user_id'), nullable = False)
+    book_id = db.Column(db.Integer(), db.ForeignKey('book.book_id'), nullable = False)
+    price = db.Column(db.Float(), nullable = False)
+    ebook_path = db.Column(db.String())
+
 class Posts(db.Model):
     __tablename__="posts"
-    post_id = db.Column(db.Integer, primary_key=True, autoincrement= True)
-    user_id = db.Column(db.Integer, db.ForeignKey('user.user_id'))
+    post_id = db.Column(db.Integer(), primary_key=True, autoincrement= True)
+    user_id = db.Column(db.Integer(), db.ForeignKey('user.user_id'))
     post_image_path = db.Column(db.String())
     post_desc = db.Column(db.String())
     like = db.Column(db.Integer())
