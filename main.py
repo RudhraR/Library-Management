@@ -21,17 +21,17 @@ app = create_app()
 app.secret_key="123456789"
 
 from application.controllers import *
-from application.admin_controller import *
+from application.librarian_controllers import *
 
-def addadmin():
-  if User.query.filter_by(role='Admin').first() is None:
-    user = User(name = "Admin", email = "admin@gmail.com", password = "1234", role ="Admin")
+def addlibrarian():
+  if User.query.filter_by(role='librarian').first() is None:
+    user = User(name = "librarian", email = "librarian@gmail.com", password = "adminpwd", role ="librarian")
     db.session.add(user)
     db.session.commit()
 
 with app.app_context():
     db.create_all()
-    addadmin()
+    addlibrarian()
 
 if __name__ == "__main__":
     app.run(host='0.0.0.0',port=8000, debug=True)

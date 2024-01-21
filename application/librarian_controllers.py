@@ -13,36 +13,36 @@ login_manager.login_view = 'login'
 def load_user(id):
     return User.query.get(id)
 
-@app.route("/admin_login", methods=["GET","POST"])
-def admin_login():
+@app.route("/librarian_login", methods=["GET","POST"])
+def librarian_login():
     if request.method == "GET":
-        return render_template("admin_login.html")
+        return render_template("librarian_login.html")
     if request.method == "POST":
         email = request.form["email"]
         password = request.form["password"]
         user =  User.query.filter_by(user_mail = email).first()
-        if (email == "admin@gmail.com" and password=="1234" and user.role=="Admin"):
+        if (email == "librarian@gmail.com" and password=="adminpwd" and user.role=="librarian"):
             # session['email'] = email
             login_user(user)
-            return redirect('/admin')
+            return redirect('/librarian_home')
         else:
-            flash('You are not allowed to access admin page')
+            flash('You are not allowed to access librarian page')
             return redirect('/login')
 
 
 # for logout user
-@app.route("/admin_logout")
+@app.route("/librarian_logout")
 @login_required
-def admin_logout():
+def librarian_logout():
     # session.pop('email',None)
     logout_user()
     return redirect('/login')
 
-@app.route("/admin", methods= ["GET"])
+@app.route("/librarian_home", methods= ["GET"])
 @login_required
-def admin():
+def librarian_home():
     if request.method == "GET":
-        if current_user.role == "Admin":
-             return render_template('admin.html')
+        if current_user.role == "librarian":
+             return render_template('librarian_home.html')
         else:
-            return ("You are not allowed to access admin page")
+            return ("You are not allowed to access librarian page")

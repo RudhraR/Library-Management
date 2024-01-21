@@ -45,7 +45,7 @@ def login():
         password =  request.form["password"]
         user =  User.query.filter_by(user_mail = email).first()
         if user:
-            if user.role != "Admin":
+            if user.role != "librarian":
                 if bcrypt.check_password_hash(user.password, password):
                     login_user(user)
                     return redirect('/')
@@ -53,7 +53,7 @@ def login():
                     flash("Wrong Password, Please Login")
                     return redirect("/login")
             else:
-                flash("You are not authorized to login as Admin.")
+                flash("You are not authorized to login as librarian.")
                 return redirect("/login")
         else:
             flash("You are not registered, Please register")
