@@ -21,25 +21,34 @@ class User(db.Model,UserMixin):
 class Book(db.Model):
     __tablename__="book"
     book_id = db.Column(db.Integer(), primary_key=True, autoincrement= True)   
-    book_name =  db.Column(db.String(80), nullable = False, unique = True)
+    book_name =  db.Column(db.String(80), nullable = False)
     book_desc = db.Column(db.String())
     author = db.Column(db.String(80), nullable = False)
     content = db.Column(db.String())
     date_issued = db.Column(db.DateTime())
     return_date = db.Column(db.DateTime())
-    price = db.Column(db.Float(), nullable=False)
-    section_id = db.Column(db.Integer(), db.ForeignKey('section.section_id'), nullable=False)
+    # price = db.Column(db.Float(), nullable=False)
+    section = db.Column(db.Integer(), db.ForeignKey('section.section_name'), nullable=False)
     feedback = db.Column(db.String())
     rating = db.Column(db.Float())
-    # book_image = db.Column(db.String())
+    book_image = db.Column(db.String())
     # user_id = db.Column(db.Integer, db.ForeignKey('user.user_id'))
+
+    def __init__(self,book_name,book_desc,author,content,book_image,section):
+        self.book_name = book_name
+        self.book_desc = book_desc
+        self.author = author
+        self.content=content
+        self.book_image=book_image
+        self.section = section
+        
 
 class Section(db.Model):
     __tablename__ = "section"
     section_id = db.Column(db.Integer(), primary_key=True)
     section_name = db.Column(db.String(40), nullable = False)
     section_desc = db.Column(db.String())
-    books = db.relationship('Book', backref = 'section', lazy = True)
+    # books = db.relationship('Book', backref = 'section', lazy = True)
 
 class Cart(db.Model):
     cart_id = db.Column(db.Integer(), primary_key=True)

@@ -70,7 +70,8 @@ def logout():
 @login_required
 def home():
     if request.method == "GET":
-        return render_template("home.html")
+        books= Book.query.all()
+        return render_template("home.html", books=books)
 
 @app.route("/user_profile", methods= ["GET"])
 @login_required
