@@ -42,13 +42,21 @@ class Book(db.Model):
         self.book_image=book_image
         self.section = section
         
-
 class Section(db.Model):
     __tablename__ = "section"
     section_id = db.Column(db.Integer(), primary_key=True)
     section_name = db.Column(db.String(40), nullable = False)
-    section_desc = db.Column(db.String())
+    # section_desc = db.Column(db.String())
     # books = db.relationship('Book', backref = 'section', lazy = True)
+
+class Book_access(db.Model):
+    __tablename__ = "book_access"
+    access_id = db.Column(db.Integer(), primary_key=True, autoincrement=True)
+    user_id = db.Column(db.Integer(), db.ForeignKey('user.user_id'), nullable = False)
+    book_id = db.Column(db.Integer(), db.ForeignKey('book.book_id'), nullable = False)
+    admin_approval = db.Column(db.String(), nullable=False)
+    request_date = db.Column(db.DateTime())
+    return_date = db.Column(db.DateTime())
 
 class Cart(db.Model):
     cart_id = db.Column(db.Integer(), primary_key=True)

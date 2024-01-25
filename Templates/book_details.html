@@ -53,7 +53,7 @@
                 </li>
                 &nbsp;
                 <li class="nav-item">
-                    <a class = "btn btn-warning" href="{{url_for('home')}}" role="button" style="width:6rem;">
+                    <a class = "btn btn-warning" href="" role="button" style="width:6rem;">
                         <i class="bi bi-cart4" style="font-size: 20px;"></i> Cart</button></a>
                 </li>
             </ul>
@@ -61,31 +61,50 @@
     </div>
   </nav>
   
-    <div class="main">
-    <div class="container text-center">
+    <div class="main" style="margin-top:10px">
+    <div class="container">
         <div class="row">
-          <div class="col-2">
-          </div>
-          <div class="col-8">
-            <div class="card" style="width: 728px;">
-                <img src="{{post.post_image_path}}" class="img-thumbnail" alt="..." style="height: 750px; width: 750px;">
+            <div class="col-sm-3">
+                <div class="card">  
                 <div class="card-body">
-                  <p class="card-text  float-start">{{post.like}}&nbsp;<i class="bi bi-heart-fill" style="font-size: 20px; color:red"></i> &nbsp;&nbsp;&nbsp;&nbsp;
-                    1 &nbsp;<i class="bi bi-chat-fill" style="font-size: 20px;"></i><br>               
-                </p>
+                    <img src="{{book.book_image}}" class="img-thumbnail" alt="..." style="height: 100%; width: 100%;">
+                </div>
+            </div></div>
+            <div class="col-sm-9">
+                <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">{{book.book_name}}</h5>
+                    <p class="card-text" style="font-size:12px;">
+                        Author: {{book.author}}<br>
+                        Genre: {{book.section}}     
+                    </p>
+                    <p class="card-text">
+                        <h6 style="text-decoration:underline">Book Description:</h6>
+                        {{book.book_desc}}</p>
+                      <!-- <a href="{{url_for('read_book',book_id=book.book_id)}}" class="btn btn-primary btn-sm">Request for free access</a> -->
+                      <!-- <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#read_modal">
+                        Request for free access
+                      </button> -->
+                      {% if request_btn %}
+                      <a href="{{url_for('user_book_access',book_id=book.book_id)}}" class="btn btn-primary btn">Request for free access</a>
+                      {% endif %}
+
+                      {% if requested_btn %}
+                      <button type="button" class="btn btn-secondary btn" disabled>Requested for access</button>
+                      {% endif %}
+
+                      {% if read_return_btns %}
+                      <a href="{{url_for('read_book',book_id=book.book_id)}}" class="btn btn-primary btn">Read for free</a>
+                      <a href="" class="btn btn-danger btn">Return book</a>
+                      {% endif %}
+                      
+                      <br><br>
+                      <button type="button" class="btn btn-warning">
+                        Add to cart & buy
+                      </button>
                 </div>
               </div>
-            <div class="card" style="width: 728px;">
-                <!-- <img src="..." class="card-img-top" alt="..."> -->
-                <div class="card-body">
-                    <h5 class="card-title float-start">Caption: &nbsp;&nbsp; </h5>
-                    <p class="card-text float-start">{{post.post_desc}}</p>
-                </div>
-              </div>
-          </div>
-          <div class="col-2">
-          </div>
-        </div>
+          </div></div>
       </div>
     </div>
 </body>

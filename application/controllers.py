@@ -104,33 +104,29 @@ def edit_profile():
         return redirect('/user_profile')
 
 
-@app.route("/add_post", methods=["GET","POST"])
+
+@app.route("/book_details/<int:book_id>", methods = ["GET"])
 @login_required
-def add_post():
+def book_details(book_id):
     if request.method == "GET":
-        return render_template('add_post.html')
-    if request.method == "POST":
-        post_img = request.files['post_img']
-        post_desc = request.form['post_desc']
+        book = Book.query.filter_by(book_id=book_id).first()  
         user_logined_id = current_user.user_id
-        post_img.save("static/images/post_images/" + post_img.filename)
-        new_post = Posts(user_id=user_logined_id, post_image_path="../static/images/post_images/" + post_img.filename, post_desc=post_desc)
-        db.session.add(new_post)
-        db.session.commit()
-        return redirect('/user_profile')
-
-@app.route("/user_post/<int:post_id>", methods = ["GET", "POST"])
-@login_required
-def user_post(post_id):
-    post = Posts.query.filter_by(post_id=post_id).first()
-    return render_template("user_post.html", post=post)
-
-
-
-
-
-
-
-
-
-
+        # user = User.query.filter_by(user_id=user_logined_id).first()
+        access_request = Book_access.query.filter_by(user_id=user_logined_id, book_id=book_id).first()
+        request_btn, requested_btn, read_return_btns = True, False, False
+        if access_request != None:
+            access_status = access_request.admin_approval
+            if access_status == "Pending":
+                requested_btn = True
+                request_btn = False
+                read_return_btns = False
+            elif access_status == "Approved":
+                read_return_btns = True
+                request_btn = False
+                requested_btn = False
+            else:
+                read_return_btns = False
+                request_btn = True
+                requested_btn = False
+        return render_template("book_details.html", book=book, request_btn = request_btn, 
+                               requested_btn = requested_btn, read_return_btns = read_return_btns)

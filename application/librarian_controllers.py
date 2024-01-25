@@ -1,6 +1,8 @@
 from flask import redirect, render_template, request, flash, session
-from flask import current_app as app
+from flask import current_app as app, url_for
 from flask_login import login_user, LoginManager, login_required, logout_user, current_user
+# from sqlalchemy import func, DateTime
+from datetime import datetime, timedelta
 from .model import *
 
 # Initializing login manager
@@ -109,3 +111,37 @@ def delete_book(book_id):
     db.session.delete(book)
     db.session.commit()
     return redirect("/librarian_home")
+
+@app.route("/user_book_access/<int:book_id>")
+@login_required
+def user_book_access(book_id):
+    user_logined_id = current_user.user_id
+    new_access_request = Book_access(book_id=book_id, user_id=user_logined_id, admin_approval="Pending")
+    db.session.add(new_access_request)
+    db.session.commit()
+    return redirect("/book_details/"+str(book_id))
+
+@app.route("/pending_approvals", methods=["GET","POST"])
+@login_required
+def pending_approvals():
+    pending_requests = Book_access.query.join(
+        Book, Book_access.book_id == Book.book_id).join(
+        User, Book_access.user_id == User.user_id).filter(
+            Book_access.admin_approval == "Pending").add_columns(
+                User.user_name, User.user_mail, 
+                Book.book_id, Book.book_name, Book_access.access_id).all() 
+    return render_template("pending_approvals.html", pending_requests = pending_requests)
+    
+@app.route("/admin_approval/<int:access_id>", methods=["POST"])
+def admin_approval(access_id):    
+    if request.method == "POST":
+        access_request = Book_access.query.filter_by(access_id=access_id).first()
+        approved_status = request.form["approved_status"]
+        if(approved_status == "Approve"):
+            access_request.admin_approval = "Approved"
+            access_request.request_date = datetime.now()
+            access_request.return_date = datetime.now() + timedelta(days=1)
+        elif(approved_status == "Reject"):
+            db.session.delete(access_request)
+        db.session.commit()
+        return redirect("/pending_approvals")

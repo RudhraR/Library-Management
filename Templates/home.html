@@ -76,14 +76,15 @@
                     Genre: {{book.section}}
                 </p>
                   <!-- <a href="{{url_for('read_book',book_id=book.book_id)}}" class="btn btn-primary btn-sm">Request for free access</a> -->
-                  <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#read_modal">
+                  <!-- <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#read_modal">
                     Request for free access
-                  </button>
-                  <button type="button" class="btn btn-warning">
+                  </button> -->
+                  <a href="{{url_for('book_details',book_id=book.book_id)}}" class="btn btn-primary btn-sm">Go to book details</a>
+                  <button type="button" class="btn btn-warning btn-sm">
                     Add to cart & buy
                   </button>
                   
-                  <div class="modal fade" id="read_modal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                  <!-- <div class="modal fade" id="read_modal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
                     <div class="modal-dialog modal-dialog-centered modal-fullscreen-xxl-down">
                       <div class="modal-content">
                         <div class="modal-header">
@@ -92,15 +93,15 @@
                         </div>
                         <div class="modal-body">
                           <div class="wrapper" id="myDiv">
-                            <iframe id="pdfframe" src="{{book.content}}#toolbar=0&navpanes=0&scrollbar=0" width="100%" height="450" type="application/pdf" onContextMenu="return false;"></iframe>
+                            <iframe id="pdfframe" src="{{book.content}}#toolbar=0&navpanes=0&scrollbar=0&view=fitH" width="100%" height="450" type="application/pdf" onContextMenu="return false;"></iframe>
                               <div class="embed-cover"></div>
                           </div>
                         </div>
                       </div>
                     </div>
-                  </div>
-                </div>              
-              </div>           
+                  </div> -->
+
+        </div></div>           
     </div>{% endfor %}
     
 </div></div></div>
