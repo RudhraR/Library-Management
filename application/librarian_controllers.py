@@ -112,14 +112,22 @@ def delete_book(book_id):
     db.session.commit()
     return redirect("/librarian_home")
 
-@app.route("/user_book_access/<int:book_id>")
+@app.route("/user_book_request/<int:book_id>")
 @login_required
-def user_book_access(book_id):
+def user_book_request(book_id):
     user_logined_id = current_user.user_id
     new_access_request = Book_access(book_id=book_id, user_id=user_logined_id, admin_approval="Pending")
     db.session.add(new_access_request)
     db.session.commit()
     return redirect("/book_details/"+str(book_id))
+
+@app.route("/user_access_revoke/<int:book_id>/<int:user_id>")
+@login_required
+def user_access_revoke(book_id,user_id):
+    access_request = Book_access.query.filter_by(user_id=user_id, book_id=book_id).first()
+    db.session.delete(access_request)
+    db.session.commit()
+    return redirect("/librarian_home")
 
 @app.route("/pending_approvals", methods=["GET","POST"])
 @login_required

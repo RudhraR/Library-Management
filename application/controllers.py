@@ -130,3 +130,12 @@ def book_details(book_id):
                 requested_btn = False
         return render_template("book_details.html", book=book, request_btn = request_btn, 
                                requested_btn = requested_btn, read_return_btns = read_return_btns)
+
+@app.route("/user_book_return/<int:book_id>")
+@login_required
+def user_book_return(book_id):
+    user_logined_id = current_user.user_id
+    access_request = Book_access.query.filter_by(user_id=user_logined_id, book_id=book_id).first()
+    db.session.delete(access_request)
+    db.session.commit()
+    return redirect("/book_details/"+str(book_id))

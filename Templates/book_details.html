@@ -86,16 +86,17 @@
                         Request for free access
                       </button> -->
                       {% if request_btn %}
-                      <a href="{{url_for('user_book_access',book_id=book.book_id)}}" class="btn btn-primary btn">Request for free access</a>
+                      <a href="{{url_for('user_book_request',book_id=book.book_id)}}" class="btn btn-primary btn">Request for free access</a>
                       {% endif %}
 
                       {% if requested_btn %}
                       <button type="button" class="btn btn-secondary btn" disabled>Requested for access</button>
+                      <a href="{{url_for('user_book_return',book_id=book.book_id)}}" class="btn btn-danger btn">Cancel Request</a>
                       {% endif %}
 
                       {% if read_return_btns %}
                       <a href="{{url_for('read_book',book_id=book.book_id)}}" class="btn btn-primary btn">Read for free</a>
-                      <a href="" class="btn btn-danger btn">Return book</a>
+                      <a href="{{url_for('user_book_return',book_id=book.book_id)}}" class="btn btn-danger btn">Return book</a>
                       {% endif %}
                       
                       <br><br>
