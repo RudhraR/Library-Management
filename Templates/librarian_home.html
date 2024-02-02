@@ -48,7 +48,8 @@
                         <i class="bi bi-person-circle" style="font-size: 22px;"></i>
                       </a>
                       <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-                        <li><a class="dropdown-item" href="{{url_for('add_books')}}">Add books</a></li>
+                        <li><a class="dropdown-item" href="{{url_for('add_books')}}">Add new books</a></li>
+                        <li><a class="dropdown-item" href="{{url_for('section_management')}}">Manage sections</a></li>
                         <li><a class="dropdown-item" href="{{url_for('pending_approvals')}}">Pending approvals</a></li>
                         <li><a class="dropdown-item" href="{{url_for('logout')}}">Logout</li>
                       </ul>
@@ -75,7 +76,7 @@
                       <a href="">{{book.book_name}}</a><br>
                       <p class="card-text" style="font-size:12px;">
                         Author: {{book.author}}<br>
-                        Genre: {{book.section}}
+                        Genre: {{book.section_name}}
                     </p>
                       <a href="{{url_for('edit_book', book_id=book.book_id)}}" class="btn btn-primary btn-sm">Edit</a>
                       <button type="button" class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#delete_modal">

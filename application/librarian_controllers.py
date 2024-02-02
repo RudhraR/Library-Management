@@ -61,12 +61,12 @@ def add_books():
         author = request.form['author']
         content=request.files['content']
         book_image=request.files['book_image']
-        section = request.form['section']
+        section_name = request.form['section']
         book_image.save("static/IMG/book_images/" + book_image.filename)
         content.save("static/books/" + content.filename)
         new_book = Book(book_name=book_name, book_desc=book_desc, author=author, 
                         content="../static/books/" + content.filename,
-                        book_image="../static/IMG/book_images/" + book_image.filename, section=section)
+                        book_image="../static/IMG/book_images/" + book_image.filename, section_name=section_name)
         db.session.add(new_book)
         db.session.commit()
         # flash ("Book added successfully")
@@ -93,9 +93,9 @@ def edit_book(book_id):
     if request.method == "POST":
         book.book_desc = request.form['book_desc']
         book.author = request.form['author']    
-        section = request.form['section']
-        if section !="Choose...":
-            book.section = section
+        section_name = request.form['section']
+        if section_name !="Choose...":
+            book.section_name = section_name
         content=request.files['content']
         if content:
             content.save("static/books/" + content.filename)
@@ -141,6 +141,7 @@ def pending_approvals():
     return render_template("pending_approvals.html", pending_requests = pending_requests)
     
 @app.route("/admin_approval/<int:access_id>", methods=["POST"])
+@login_required
 def admin_approval(access_id):    
     if request.method == "POST":
         access_request = Book_access.query.filter_by(access_id=access_id).first()
@@ -153,3 +154,36 @@ def admin_approval(access_id):
             db.session.delete(access_request)
         db.session.commit()
         return redirect("/pending_approvals")
+    
+@app.route("/section_management")
+@login_required
+def section_management():
+    available_sections = Section.query.all()
+    # book_count = Section.query.filter_by(section_id = section_id).count()
+    return render_template("section_management.html", available_sections=available_sections)
+
+@app.route("/add_section", methods=["POST"])
+@login_required
+def add_section():
+        if request.method=="POST":
+            section_name = request.form['section_name']
+            new_section = Section(section_name=section_name)
+            db.session.add(new_section)
+            db.session.commit()
+            msg = "added"
+            available_sections = Section.query.all()
+            return render_template("section_management.html", msg=msg, available_sections=available_sections)
+
+@app.route("/section_action/<int:section_id>", methods=["POST"])
+@login_required
+def section_action(section_id):
+    if request.method=="POST":
+        section_action = request.form["section_action"]
+        section = Section.query.filter_by(section_id=section_id).first()
+        if section_action == "Delete": 
+            db.session.delete(section)
+            db.session.commit()
+            msg = "deleted"
+        available_sections = Section.query.all()
+        return render_template("section_management.html", msg=msg, available_sections=available_sections)
+        

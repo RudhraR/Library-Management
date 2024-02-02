@@ -28,26 +28,26 @@ class Book(db.Model):
     date_issued = db.Column(db.DateTime())
     return_date = db.Column(db.DateTime())
     # price = db.Column(db.Float(), nullable=False)
-    section = db.Column(db.Integer(), db.ForeignKey('section.section_name'), nullable=False)
+    section_id = db.Column(db.Integer(), db.ForeignKey('section.section_id'), nullable=False)
     feedback = db.Column(db.String())
     rating = db.Column(db.Float())
     book_image = db.Column(db.String())
     # user_id = db.Column(db.Integer, db.ForeignKey('user.user_id'))
 
-    def __init__(self,book_name,book_desc,author,content,book_image,section):
+    def __init__(self,book_name,book_desc,author,content,book_image,section_id):
         self.book_name = book_name
         self.book_desc = book_desc
         self.author = author
         self.content=content
         self.book_image=book_image
-        self.section = section
+        self.section_id = section_id
         
 class Section(db.Model):
     __tablename__ = "section"
     section_id = db.Column(db.Integer(), primary_key=True)
     section_name = db.Column(db.String(40), nullable = False)
     # section_desc = db.Column(db.String())
-    # books = db.relationship('Book', backref = 'section', lazy = True)
+    books = db.relationship('Book', backref = 'section', lazy = True)
 
 class Book_access(db.Model):
     __tablename__ = "book_access"
