@@ -18,7 +18,7 @@ def load_user(id):
 @app.route("/librarian_login", methods=["GET","POST"])
 def librarian_login():
     if request.method == "GET":
-        return render_template("librarian_login.html")
+        return render_template("librarian/librarian_login.html")
     if request.method == "POST":
         email = request.form["email"]
         password = request.form["password"]
@@ -46,7 +46,7 @@ def librarian_home():
     if request.method == "GET":
         if current_user.role == "librarian":
             books= Book.query.all()
-            return render_template("librarian_home.html", books=books)
+            return render_template("librarian/librarian_home.html", books=books)
         else:
             return ("You are not allowed to access librarian page")
         
@@ -54,7 +54,7 @@ def librarian_home():
 @login_required
 def add_books():
     if request.method == "GET":
-        return render_template('add_books.html')
+        return render_template('librarian/add_books.html')
     if request.method == "POST":
         book_name = request.form['book_name']
         book_desc = request.form['book_desc']
@@ -71,14 +71,7 @@ def add_books():
         db.session.commit()
         # flash ("Book added successfully")
         msg = "Book added successfully"
-        return render_template("add_books.html", msg=msg)
-
-@app.route("/read_book/<int:book_id>", methods = ["GET", "POST"])
-@login_required
-def read_book(book_id):
-    book = Book.query.filter_by(book_id=book_id).first()
-    return render_template("read_book.html", book=book)
-
+        return render_template("librarian/add_books.html", msg=msg)
 
 @app.route("/edit_book/<int:book_id>", methods=["GET","POST"])
 @login_required
@@ -89,7 +82,7 @@ def edit_book(book_id):
         return redirect("/librarian_home")
     if request.method == "GET":
         book = Book.query.filter_by(book_id=book_id).first()
-        return render_template("edit_book.html", book=book)
+        return render_template("librarian/edit_book.html", book=book)
     if request.method == "POST":
         book.book_desc = request.form['book_desc']
         book.author = request.form['author']    
@@ -102,7 +95,7 @@ def edit_book(book_id):
             book.content="../static/books/" + content.filename
         db.session.commit()
         msg = "Book details updated successfully"
-        return render_template("edit_book.html", book=book,  msg=msg)
+        return render_template("librarian/edit_book.html", book=book,  msg=msg)
      
 @app.route("/delete_book/<int:book_id>")
 @login_required
@@ -138,7 +131,7 @@ def pending_approvals():
             Book_access.admin_approval == "Pending").add_columns(
                 User.user_name, User.user_mail, 
                 Book.book_id, Book.book_name, Book_access.access_id).all() 
-    return render_template("pending_approvals.html", pending_requests = pending_requests)
+    return render_template("librarian/pending_approvals.html", pending_requests = pending_requests)
     
 @app.route("/admin_approval/<int:access_id>", methods=["POST"])
 @login_required
@@ -160,7 +153,7 @@ def admin_approval(access_id):
 def section_management():
     available_sections = Section.query.all()
     # book_count = Section.query.filter_by(section_id = section_id).count()
-    return render_template("section_management.html", available_sections=available_sections)
+    return render_template("librarian/section_management.html", available_sections=available_sections)
 
 @app.route("/add_section", methods=["POST"])
 @login_required
@@ -172,7 +165,7 @@ def add_section():
             db.session.commit()
             msg = "added"
             available_sections = Section.query.all()
-            return render_template("section_management.html", msg=msg, available_sections=available_sections)
+            return render_template("librarian/section_management.html", msg=msg, available_sections=available_sections)
 
 @app.route("/section_action/<int:section_id>", methods=["POST"])
 @login_required
@@ -185,5 +178,5 @@ def section_action(section_id):
             db.session.commit()
             msg = "deleted"
         available_sections = Section.query.all()
-        return render_template("section_management.html", msg=msg, available_sections=available_sections)
+        return render_template("librarian/section_management.html", msg=msg, available_sections=available_sections)
         
