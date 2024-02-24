@@ -1,0 +1,31 @@
+{% set add_section %}
+{%block content%}
+<div class="add-section col-sm-3">
+    <div class="card" style="width: 20rem;">
+      <h5 class="card-header bg-success text-white">Add New Section</h5>
+      <div class="card-body">
+        <form method="post" action="{{url_for('add_section')}}">
+            <div class="form-group row">
+                <label for="book_name" class="col-sm-5 col-form-label">Section Name</label>
+                <div class="col-sm-7">
+                  <input type="text" class="form-control" id="section_name" placeholder="Section Name" name="section_name">
+                </div>
+              </div>
+              <div class="form-group row">
+                <label for="book_desc" class="col-sm-5 col-form-label">Description</label>
+                <div class="col-sm-7">
+                  <textarea class="form-control" id="section_desc" rows="3" name="section_desc" placeholder="Description"></textarea>
+                </div>
+              </div><br>
+              <div class="form-group row">
+                <label class="col-sm-4"></label>
+                <div class="col-sm-8">
+                  <button type="submit" class="btn btn-primary">Submit</button>
+                </div>
+              </div>
+        </form>
+      </div>
+    </div></div>
+{%endblock%}
+{%endset%}
+  

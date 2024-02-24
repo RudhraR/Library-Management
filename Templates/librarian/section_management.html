@@ -1,73 +1,24 @@
-<!DOCTYPE html>
-<html>
+  {% extends "base.html" %}
+  {% from 'librarian/add_section.html' import add_section%}
+  {%block title%}
+  Librarian home
+  {%endblock%}
+  {%block content%}
 
-<head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial_scale=150">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css" />
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet"
-        integrity="sha384-GLhlTQ8iRABdZLl6O3oVMWSktQOp6b7In1Zl3/Jr59b6EGGoI1aFkw7cmDA6j6gD" crossorigin="anonymous">
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"
-        integrity="sha384-w76AqPfDkMBDXo30jS1Sgez6pr3x5MlQ1ZAGC+nuZB+EYdgRZgiwxhTBTkF7CXvN"
-        crossorigin="anonymous"></script>
-    <link rel="stylesheet" type="text/css" href="{{url_for('static', filename='CSS/register.css' )}}">
-    <title>Section Management</title>
-</head>
-
-<body>
-   
-  <nav class="navbar navbar-expand-lg">
-    <div class="container-fluid">
-      <a class="navbar-brand rounded" href="{{url_for('librarian_home')}}">BookMate</a>
-      <div class="collapse navbar-collapse" id="navbarSupportedContent">
-        <ul class="navbar-nav mr-auto mb-2 mb-lg-0">
-            <li class="nav-item dropdown">
-                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                  Browse books by Category
-                </a>
-                <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-                  <li><a class="dropdown-item" href="#">History</a></li>
-                  <li><a class="dropdown-item" href="#">Fiction</a></li>
-                  <li><a class="dropdown-item" href="#">Comics</a></li>
-                </ul>
-              </li>
-            </ul>
-            </div>
-        <div class="example mx-auto order-0 w-50">    
-        <form class="example d-flex">
-            <input type="search" placeholder="Search for books">
-            <button type="submit"><i class="fa fa-search"></i></button>
-      </form>
-      </div>
-      <div class="navbar-collapse w-25 justify-content-end" style="margin-right:10px">
-        <ul class="navbar-nav">
-            <li class="nav-item dropdown">
-                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                    <i class="bi bi-person-circle" style="font-size: 22px;"></i>
-                  </a>
-                  <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-                    <li><a class="dropdown-item" href="{{url_for('add_books')}}">Add books</a></li>
-                    <li><a class="dropdown-item" href="{{url_for('logout')}}">Logout</li>
-                  </ul>
-            </li>
-            &nbsp;
-            <li class="nav-item">
-                <a class = "btn btn-warning" href="{{url_for('librarian_home')}}" role="button" style="width:10rem;">
-                    <i class="bi bi-journals" style="font-size: 20px;"></i> Track status</button></a>
-            </li>
-        </ul>
-    </div>
-</div>
-</nav>
 
  {% if msg %}
-  {% if msg == "added" %}
-    <div class="alert alert-success alert-dismissible fade show" role="alert">Section added successfully
-    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button></div>
-  {% elif msg == "deleted" %}
-    <div class="alert alert-danger alert-dismissible fade show" role="alert">Section deleted successfully
-    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button></div>
+    {% if msg == "Edit modal" %}
+    <script type="text/javascript">
+        $(window).load(function(){
+        $('#editModal').modal('show');
+     });
+    </script>
+    {% elif msg == "Delete modal" %}
+    <script type="text/javascript">
+      $(window).load(function(){
+      $('#deleteModal').modal('show');
+   });
+  </script>
   {%endif%}
  {%endif%}
 
@@ -88,20 +39,25 @@
                   </tr>
                 </thead>
                 <tbody>
-                    {% for section in available_sections %}
+                    {% for section in sections %}
                     <tr>
                     <th scope="row">{{loop.index}}</th>
-                    <td>{{section.section_name}}</td>
+                    <td>
+                      <button type="button" class="btn btn-sm btn-link" alt="Section details" data-bs-toggle="modal" data-bs-target="#section_details">
+                        {{section.section_name}}
+                      </button>
+                      
+                    </td>
                     <td>{{section.section_id}}</td>
-                    <td>0</td>
+                    <td>{{section.books|length}}</td>
                     <td>
                         <form class="row g-3" method="post" action="{{url_for('section_action', section_id=section.section_id)}}" novalidate>
                             <div class="col-auto">
                                 <select class="form-control" name="section_action" id="section_action" required>
                                     <option selected disabled value="">Choose</option>
-                                    <option value="Edit">Edit</option>
-                                    <option value="Delete">Delete</option>
-                                    <option value="Show">Assign books</option>
+                                    <option value="Edit">Edit section</option>
+                                    <option value="Delete">Delete section</option>
+                                    <option value="Show">View/Manage books</option>
                                   </select>
                             </div>
                             <div class="col-auto">
@@ -110,6 +66,41 @@
                         </form>
                     </td>
                   </tr>
+   <!-- Section details modal -->
+  <div class="modal fade" id="section_details" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+            <h5 class="modal-title" id="exampleModalLabel">Section details</h5>
+            <a href="{{url_for('section_management')}}" class="btn btn-close"></a>
+          </div>
+        <div class="modal-body">
+            <form>
+                <div class="form-group row">
+                  <label for="section_name" class="col-sm-6 col-form-label"><h6>Section Name</h6></label>
+                  <div class="col-sm-6">
+                    <input type="text" readonly class="form-control-plaintext" id="section_name" value="{{section.section_name}}">
+                  </div>
+                </div>
+                <div class="form-group row">
+                  <label for="section_desc" class="col-sm-6 col-form-label"><h6>Section Description</h6></label>
+                  <div class="col-sm-6">
+                    <input type="text" readonly class="form-control-plaintext" id="section_desc" value="{{section.section_desc}}">
+                  </div>
+                </div>
+                <div class="form-group row">
+                  <label for="date_created" class="col-sm-6 col-form-label"><h6>Date created</h6></label>
+                  <div class="col-sm-6">
+                    <input type="text" readonly class="form-control-plaintext" id="date_created" value="{{section.date_created}}">
+                  </div>
+                </div>
+          </div>
+          <div class="modal-footer">
+            <a href="{{url_for('section_management')}}" class="btn btn-secondary">Close</a>
+          </div>
+          </form>
+        </div></div></div>
+
                   {% endfor %}
                 </tbody>
               </table>
@@ -118,21 +109,85 @@
       </div>    
       
       <div class="add-section col-sm-3">
-        <div class="card" style="width: 20rem;">
-          <h5 class="card-header bg-success text-white">Add New Section</h5>
-          <div class="card-body">
-            <form class="row g-3" method="post" action="{{url_for('add_section')}}">
-              <div class="col-auto form-inline">
-                  <input type="text" id="section_name" class="form-control" placeholder="Section name" name="section_name">
-              </div>
-              <div class="col-auto">
-                  <button type="submit"class="btn btn-sm btn-success">Submit</button>
-              </div>
-            </form> 
+        {{add_section}}
+      </div>
+      
+      </div></div>
+
+  {% if current_section %}
+
+  
+  <!-- Edit modal -->
+    <div class="modal fade" id="editModal" tabindex="-1" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+              <h5 class="modal-title" id="exampleModalLabel">Edit Section</h5>
+              <a href="{{url_for('section_management')}}" class="btn btn-close"></a>
+            </div>
+          <div class="modal-body">
+              <form method="POST" action="{{url_for('edit_section', section_id=current_section.section_id)}}">
+                  <div class="form-group row">
+                    <label for="new_section_name" class="col-sm-6 col-form-label">Section Name</label>
+                    <div class="col-sm-6">
+                      <input type="text" class="form-control" id="new_section_name" value="{{current_section.section_name}}" name="new_section_name">
+                    </div>
+                  </div>
+                  <div class="form-group row">
+                    <label for="new_section_desc" class="col-sm-6 col-form-label">Section Description</label>
+                    <div class="col-sm-6">
+                      <textarea class="form-control" id="new_section_desc" rows="3" name="new_section_desc" >{{current_section.section_desc}}</textarea>
+                    </div>
+                  </div>
+            </div>
+            <div class="modal-footer">
+              <button type="submit" class="btn btn-primary mb-2">Update section name</button>
+              <a href="{{url_for('section_management')}}" class="btn btn-secondary">Cancel</a>
+            </div>
+            </form>
+          </div></div></div>
+
+
+    <!--Delete Modal-->
+
+    <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="exampleModalLabel">Delete confirmation</h5>
+            <a href="{{url_for('section_management')}}" class="btn btn-close"></a>
+          </div>
+          <div class="modal-body">
+            {%if sections|length > 1%}
+            <p>There are books in this section. What action would you prefer? <br><br>
+            1. Reassign books to another section and Delete the section. <br>
+           
+            <form method="post" action="{{url_for('delete_section', section_id=current_section.section_id)}}">              
+              <div class="form-group row">
+                <div class="form-group col-sm-6">
+                  <select class="form-control col-sm-3" id="new_section_name" name="new_section_name" required>
+                    {%for section in sections %}
+                    {%if section != current_section%} 
+                      <option value="{{section.section_id}}">{{section.section_name}}</option> 
+                      {%endif%}
+                    {%endfor%}  
+                  </select>
+                </div>
+                <button type="submit" class="btn btn-warning col-sm-6">Reassign and delete</button>         
+            </div>           
+          </form><br>
+            2. {%endif%}
+            Delete the whole section and the books. &emsp;
+            <a href="{{url_for('delete_section', section_id=current_section.section_id)}}" class="btn btn-danger">Delete section</a>
+            </p>
+          </div>
+          <div class="modal-footer">
+            <a href="{{url_for('section_management')}}" class="btn btn-secondary">Cancel</a>
+           <!-- <a href="" class="btn btn-danger">Delete book</a> -->
           </div>
         </div>
-      </div> 
-      </div></div>
-</body>
+      </div>
+    </div>
 
-</html>
+  {% endif %}
+{%endblock%}

@@ -76,7 +76,7 @@
                     <h5 class="card-title">{{book.book_name}}</h5>
                     <p class="card-text" style="font-size:12px;">
                         Author: {{book.author}}<br>
-                        Genre: {{book.section_name}}     
+                            
                     </p>
                     <p class="card-text">
                         <h6 style="text-decoration:underline">Book Description:</h6>
@@ -100,9 +100,44 @@
                       {% endif %}
                       
                       <br><br>
+                      {%if edit_delete_btn%}
+                      <a href="{{url_for('edit_book', book_id=book.book_id)}}" class="btn btn-primary btn-sm">Edit</a>
+                      <button type="button" class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#delete_modal">
+                        Delete
+                      </button>
+
+                      <!-- Modal -->
+                      <div class="modal fade" id="delete_modal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                        <div class="modal-dialog">
+                          <div class="modal-content">
+                            <div class="modal-header">
+                              <h5 class="modal-title" id="exampleModalLabel">Delete confirmation</h5>
+                              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                              Are you sure you want to delete this book?
+                            </div>
+                            <div class="modal-footer">
+                              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                              <a href="{{url_for('delete_book', book_id=book.book_id)}}" class="btn btn-danger">Delete book</a>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                      {%endif%}
+
+                      {%if max_request_reached%}
+                      <div class = "container" style="border:1px solid black;"> 
+                      <p><em>Note: <br> You can have only maximum of 5 book requests/access at a moment. <br>
+                        You can either return books or cancel other book-requests to proceed with new book-requests.</em></p>
+                      </div><br>
+                        {%endif%}
+                      {%if edit_delete_btn == False%}
                       <button type="button" class="btn btn-warning">
                         Add to cart & buy
                       </button>
+                      {%endif%}
+
                 </div>
               </div>
           </div></div>
