@@ -19,14 +19,16 @@ Book Details
             <div class="row details_and_feedback"> <!--separate columns for book details and feedback-->
               <div class="col-sm-6"> <!--col for details-->
                 <h5 class="card-title">{{book.book_name}}</h5>
-                <p class="card-text" style="font-size:14px;">
-                  Author: {{book.author}}<br><br>
-                  User Rating:
+                <p class="card-text" style="font-size:14px">
+                  Author: {{book.author}}<br>
+                  Rating:
                   {%if book.rating%}
                   {{book.rating}}/5
                   {%else%}
                   <em>No ratings yet</em>
-                  {%endif%}
+                  {%endif%}<br>
+                  Number of pages: {{book.no_of_pages}}<br></p>
+                  <p style="font-size: 15px"><b>Price: </b>Rs.{{book.price}}
                 </p>
                 <p class="card-text">
                 <h6 style="text-decoration:underline">Book Description:</h6>
@@ -35,7 +37,7 @@ Book Details
                 <!-- <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#read_modal">
                         Request for free access
                       </button> -->
-                {% if request_btn %}
+                {% if request_btn and purchased==None%}
                 <a href="{{url_for('user_book_request',book_id=book.book_id)}}" class="btn btn-primary btn">Request for
                   free
                   access</a>
@@ -55,10 +57,12 @@ Book Details
 
                 <br><br>
                 {%if edit_delete_btn == False%}
-                <button type="button" class="btn btn-warning">
-                  Add to cart & buy
-                </button>
-
+                  {%if purchased%}
+                  <a href="{{url_for('read_book',book_id=book.book_id)}}" class="btn btn-primary">Read for free</a>
+                  <a href="{{book.content}}" class="btn btn-secondary" download>Download</a>
+                  {%else%}
+                  <a href="{{url_for('add_to_cart',book_id=book.book_id)}}" class="btn btn-warning btn-sm">Add to cart & buy </a>
+                  {%endif%}
                 {%else%}
                 <a href="{{url_for('edit_book', book_id=book.book_id)}}" class="btn btn-primary btn-sm">Edit</a>
                 <button type="button" class="btn btn-danger btn-sm" data-bs-toggle="modal"
@@ -92,7 +96,7 @@ Book Details
               <div class="col-sm-6"><!--col for feedback-->
 
                 <!-- Getting user Feedback, if not given already-->
-                {%if feedback_given == False %}
+                {%if feedback_given == False and user.role == "User" %}
                 <div id="feedback-form" class="border rounded" style="padding:15px;">
                   <form method="post" action="{{url_for('user_feedback',book_id=book.book_id)}}">
                     <div class="form-group">

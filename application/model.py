@@ -25,21 +25,17 @@ class Book(db.Model):
     book_desc = db.Column(db.String())
     author = db.Column(db.String(80), nullable = False)
     content = db.Column(db.String())
-    date_issued = db.Column(db.DateTime())
-    return_date = db.Column(db.DateTime())
-    # price = db.Column(db.Float(), nullable=False)
+    price = db.Column(db.Float(), nullable=False)
     section_id = db.Column(db.Integer(), db.ForeignKey('section.section_id'), nullable=False)
     rating = db.Column(db.String())
     book_image = db.Column(db.String())
-    # user_id = db.Column(db.Integer, db.ForeignKey('user.user_id'))
-
-    def __init__(self,book_name,book_desc,author,content,book_image,section_id):
-        self.book_name = book_name
-        self.book_desc = book_desc
-        self.author = author
-        self.content=content
-        self.book_image=book_image
-        self.section_id = section_id
+    no_of_pages = db.Column(db.Integer())  
+    
+    book_access = db.relationship("Book_access", cascade="all, delete")
+    feedback = db.relationship("User_Feedback", cascade="all, delete")
+    cart = db.relationship("Cart", cascade="all, delete")
+    books_purchased = db.relationship("Books_purchased", cascade="all, delete")
+    
         
 class Section(db.Model):
     __tablename__ = "section"
@@ -68,33 +64,14 @@ class User_Feedback(db.Model):
     user_feedback = db.Column(db.String())
 
 class Cart(db.Model):
+    __tablename__="cart"
     cart_id = db.Column(db.Integer(), primary_key=True)
     user_id = db.Column(db.Integer(), db.ForeignKey('user.user_id'), nullable = False)
     book_id = db.Column(db.Integer(), db.ForeignKey('book.book_id'), nullable = False)
+    price = db.Column(db.Float(), nullable = False)
 
-class Order(db.Model):
+class Books_purchased(db.Model):
+    __tablename__="books_purchased"
     order_id = db.Column(db.Integer(), primary_key = True)
     user_id = db.Column(db.Integer(), db.ForeignKey('user.user_id'), nullable = False)
     book_id = db.Column(db.Integer(), db.ForeignKey('book.book_id'), nullable = False)
-    price = db.Column(db.Float(), nullable = False)
-    ebook_path = db.Column(db.String())
-
-class Posts(db.Model):
-    __tablename__="posts"
-    post_id = db.Column(db.Integer(), primary_key=True, autoincrement= True)
-    user_id = db.Column(db.Integer(), db.ForeignKey('user.user_id'))
-    post_image_path = db.Column(db.String())
-    post_desc = db.Column(db.String())
-    like = db.Column(db.Integer())
-
-    def __init__(self, user_id, post_image_path, post_desc):
-        self.user_id = user_id
-        self.post_desc = post_desc
-        self.post_image_path = post_image_path
-
-class PostComments(db.Model):
-    __tablename__="comments"
-    comment_id = db.Column(db.Integer(), primary_key=True, autoincrement = True)
-    user_id = db.Column(db.Integer(), db.ForeignKey('user.user_id'))
-    post_id = db.Column(db.Integer(), db.ForeignKey('posts.post_id'))
-    comment = db.Column(db.String())

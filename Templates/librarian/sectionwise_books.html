@@ -23,6 +23,7 @@ Sectionwise books
                 </tr>
               </thead>
               <tbody>
+                {%if section_books%}
                   {% for book in section_books %}
                   <tr>
                   <th scope="row">{{loop.index}}</th>
@@ -62,6 +63,13 @@ Sectionwise books
                     </div>
                   </div>
                 {% endfor %}
+                {%else%}
+                <tr>
+                  <td class="text-center" colspan="6">
+                  <em>There are no books added right now.</em>
+                  </td>
+                </tr>
+                {%endif%}
               </tbody>
             </table>
           </div></div></div>

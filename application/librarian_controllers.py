@@ -4,6 +4,8 @@ from flask_login import login_user, LoginManager, login_required, logout_user, c
 from datetime import datetime, timedelta
 from .model import *
 from functools import wraps
+import os
+
 # Initializing login manager
 
 login_manager = LoginManager()
@@ -20,7 +22,7 @@ def librarian_only(func):
         if current_user.is_authenticated:
             if current_user.role != "librarian":
                 flash('You are not allowed to access Librarian related pages')
-                return redirect(url_for('home'))
+                return redirect('/')
         return func(*args, **kwargs)
     return inner
             
@@ -57,11 +59,14 @@ def add_books():
         content=request.files['content']
         book_image=request.files['book_image']
         section_id = request.form['section_id']
+        price = request.form['price']
+        no_of_pages = request.form['no_of_pages']
         book_image.save("static/IMG/book_images/" + book_image.filename)
         content.save("static/books/" + content.filename)
         new_book = Book(book_name=book_name, book_desc=book_desc, author=author, 
                         content="../static/books/" + content.filename,
-                        book_image="../static/IMG/book_images/" + book_image.filename, section_id=section_id)
+                        book_image="../static/IMG/book_images/" + book_image.filename, section_id=section_id,
+                        price=price, no_of_pages=no_of_pages)
         db.session.add(new_book)
         db.session.commit()
         flash ("Book added successfully", 'success')
@@ -77,7 +82,7 @@ def edit_book(book_id):
     section = Section.query.filter_by(section_id = book.section_id).first()
     if book == None:
         flash("Book doesn't exist")
-        return redirect("/home")
+        return redirect("/")
     if request.method == "GET":
         return render_template("librarian/edit_book.html", book=book, sections=sections, current_section_name=section.section_name, user=current_user)
     if request.method == "POST":
@@ -90,6 +95,8 @@ def edit_book(book_id):
         if content:
             content.save("static/books/" + content.filename)
             book.content="../static/books/" + content.filename
+        book.price = request.form['price']
+        book.no_of_pages = request.form['no_of_pages']
         db.session.commit()
         msg = "Book details updated successfully"
         section = Section.query.filter_by(section_id = book.section_id).first()
@@ -101,11 +108,13 @@ def edit_book(book_id):
 def delete_book(book_id):
     book = Book.query.filter_by(book_id=book_id).first()
     if book:
+        os.remove(book.content[3:])
+        os.remove(book.book_image[3:])
         db.session.delete(book)
         db.session.commit()
     else:
         flash("Book doesn't exist")
-    return redirect("/home")
+    return redirect("/")
 
 @app.route("/user_book_request/<int:book_id>")
 @login_required

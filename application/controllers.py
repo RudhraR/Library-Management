@@ -71,7 +71,8 @@ def logout():
 def home():
     if request.method == "GET":
         sections= Section.query.all()
-        return render_template("home.html", sections=sections, user=current_user)
+        purchased = Books_purchased.query.filter_by(user_id = current_user.user_id).all()
+        return render_template("home.html", sections=sections, user=current_user, purchased=purchased)
 
 @app.route("/book_details/<int:book_id>", methods = ["GET"])
 @login_required
@@ -79,18 +80,20 @@ def book_details(book_id):
     if request.method == "GET":
         book = Book.query.filter_by(book_id=book_id).first()  
         user_logined_id = current_user.user_id
+        feedback_list = User_Feedback.query.join(
+                User, User_Feedback.user_id == User.user_id).filter(
+                User_Feedback.book_id == book_id).add_columns(
+                User.user_name, User_Feedback.rating, User_Feedback.user_feedback).all() 
         
         if current_user.role!='librarian':
+            
             access_request = Book_access.query.filter_by(user_id=user_logined_id, book_id=book_id).first()
             user_feedback = User_Feedback.query.filter_by(user_id=user_logined_id, book_id=book_id).first()
             current_time = datetime.now()
             request_btn, requested_btn, read_return_btns, edit_delete_btn = True, False, False, False
             max_request_reached, feedback_given=False, False
             
-            feedback_list = User_Feedback.query.join(
-                User, User_Feedback.user_id == User.user_id).filter(
-                User_Feedback.book_id == book_id).add_columns(
-                User.user_name, User_Feedback.rating, User_Feedback.user_feedback).all() 
+            purchased = Books_purchased.query.filter_by(user_id = user_logined_id, book_id=book_id).first()
             
             if user_feedback:
                 feedback_given=True
@@ -120,7 +123,7 @@ def book_details(book_id):
                     read_return_btns = False
                     request_btn = False
                     requested_btn = False        
-            return render_template("user/book_details.html", book=book, request_btn = request_btn, 
+            return render_template("user/book_details.html", book=book, request_btn = request_btn, purchased=purchased,
                                requested_btn = requested_btn, read_return_btns = read_return_btns, 
                                edit_delete_btn=edit_delete_btn, max_request_reached=max_request_reached,
                                feedback_given=feedback_given,user=current_user, feedback_list=feedback_list)
@@ -157,8 +160,15 @@ def user_books():
             Book_access.user_id == current_user.user_id, Book_access.admin_approval == "Approved").add_columns(
                 Book.book_name, Book.book_id,
                 Book_access.admin_approved_date, Book_access.return_date).all()
+            
+    purchased_books = Books_purchased.query.join(
+        Book, Books_purchased.book_id == Book.book_id).filter(
+            Books_purchased.user_id == current_user.user_id).add_columns(
+                Book.book_name, Book.author, Book.content).all()
+        
     if request.method == "GET":
-        return render_template("user/user_books.html", pending_requests=pending_requests, books_to_read= books_to_read, user=current_user)
+        return render_template("user/user_books.html", pending_requests=pending_requests, 
+                               books_to_read= books_to_read, purchased_books=purchased_books, user=current_user)
     
 @app.route("/user_feedback/<int:book_id>", methods=["POST"])
 @login_required
@@ -202,9 +212,64 @@ def search():
             search_param = "book"
         return render_template('search.html', search_results=search_results, 
                                search_param=search_param, user=current_user)
-        
-        
+
+   
+@app.route("/add_to_cart/<int:book_id>")
+@login_required
+def add_to_cart(book_id):
+    book = Book.query.filter_by(book_id=book_id).first()
+    new_item = Cart(user_id=current_user.user_id, book_id=book_id, price=book.price)
+    db.session.add(new_item)
+    db.session.commit()
+    flash("Book added successfully to the cart.", "success")
+    return redirect('/cart')
+
+@app.route("/delete_from_cart/<int:cart_id>")
+@login_required
+def delete_from_cart(cart_id):
+    item = Cart.query.filter_by(cart_id=cart_id).first()
+    db.session.delete(item)
+    db.session.commit()
+    flash("Book deleted from the cart.", "error")
+    return redirect('/cart')
+
 @app.route("/cart", methods=["GET","POST"])
 @login_required
 def cart():
+    if request.method=="GET":
+        cart_items = Cart.query.join(
+                Book, Cart.book_id == Book.book_id).filter(
+                Cart.user_id == current_user.user_id).add_columns(
+                Book.book_name, Book.author, Book.price, Cart.cart_id).all() 
+        if cart_items:
+            total_price= sum([item.price for item in cart_items])
+        return render_template('user/cart.html',user=current_user, cart_items=cart_items, total_price=total_price)    
     return render_template('user/cart.html',user=current_user)
+
+@app.route("/purchase", methods=["POST"])
+@login_required
+def purchase():
+    if request.method == "POST":
+        cvv = request.form["cvv"]
+        if cvv == "123":
+            purchase = Cart.query.filter_by(user_id = current_user.user_id).all()
+            for item in purchase:     
+                new_item = Books_purchased(user_id=current_user.user_id, book_id=item.book_id)
+                db.session.add(new_item)
+                db.session.delete(item)
+            db.session.commit()
+            flash("Your payment is complete. You can now download your purchased e-books.", "success")
+            return redirect('/purchased_books')
+        else:
+            flash("Your CVV is incorrect. Try your payment again.", "error")
+            return redirect('/cart')
+
+@app.route("/purchased_books", methods=["GET"])
+@login_required
+def purchased_books():
+    if request.method == "GET":
+        purchased_books = Books_purchased.query.join(
+        Book, Books_purchased.book_id == Book.book_id).filter(
+            Books_purchased.user_id == current_user.user_id).add_columns(
+                Book.book_name, Book.author, Book.content, Book.book_id).all()
+        return render_template("user/purchased_books.html", purchased_books=purchased_books, user=current_user)

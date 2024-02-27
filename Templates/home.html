@@ -10,8 +10,10 @@ User homepage
 
 <div class="display_books">
   <br>
+  {% if sections %}
   <h4 style="text-align:center;color:gray"> Available e-books in the Library </h4><br>
   <div class="container">
+    
     {%for section in sections%}
     <div class="card bg-light border-secondary">
       <h5 class="card-header">{{section.section_name}}</h5>
@@ -26,13 +28,14 @@ User homepage
               <div class="card-body" style="font-size:15px;">
                 <a href="{{url_for('book_details',book_id=book.book_id)}}">{{book.book_name}}</a><br>
                 <p class="card-text" style="font-size:12px;">
-                  Author: {{book.author}}<br>
-                  Rating:
+                  <b>Author: </b>{{book.author}}<br>
+                  <b>Rating: </b>
                   {%if book.rating%}
                   {{book.rating}}/5
                   {%else%}
                   <em>No ratings yet</em>
-                  {%endif%}
+                  {%endif%}<br>
+                  <b>Price: </b>Rs.{{book.price}}
                 </p>
 
                 {%if user.role=="librarian"%}
@@ -43,8 +46,19 @@ User homepage
                 {%else%}
                 <a href="{{url_for('book_details',book_id=book.book_id)}}" class="btn btn-primary btn-sm">Go to book
                   details</a>
-                <button type="button" class="btn btn-warning btn-sm">Add to cart & buy</button>
+                
+                    <!-- {%if purchased%}
+                    {%for purchase in purchased%}
+                      {%if purchase.book_id == book.book_id%}
+                       <a href="{{book.content}}" class="btn btn-secondary btn-sm" download>Download e-book</a> 
+                        {%endif%} 
+                      {%endfor%}
+                    {%else%}
+                        <a href="{{url_for('add_to_cart',book_id=book.book_id)}}" class="btn btn-warning btn-sm">Add to cart & buy </a>
+                    {%endif%} -->
+
                 {%endif%}
+
                 <!-- Modal -->
                 <div class="modal fade" id="delete_modal" tabindex="-1" aria-labelledby="exampleModalLabel"
                   aria-hidden="true">
@@ -75,8 +89,12 @@ User homepage
         </div>
       </div>
     </div><br>{%endfor%}
-
   </div>
+  {%else%}
+  <div class="text-center">
+    <em>There are no books/sections available right now.</em>
+</div>
+  {%endif%}  
 </div>
 
 {%endblock%}

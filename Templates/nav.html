@@ -43,7 +43,8 @@
             <i class="bi bi-file-earmark-bar-graph" style="font-size: 21px;"></i> Dashboard</button></a>
         </li>
         {%else%}
-        <li><a class="dropdown-item" href="{{url_for('user_books')}}">My books</a></li>
+        <li><a class="dropdown-item" href="{{url_for('user_books')}}">Free books/requests</a></li>
+        <li><a class="dropdown-item" href="{{url_for('purchased_books')}}">Purchased books</a></li>
         <li><a class="dropdown-item" href="{{url_for('logout')}}">Logout</li>
       </ul>
       </li>
