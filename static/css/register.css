@@ -19,15 +19,19 @@ border: 1px solid grey;
 padding:8px;
 }
 
-  form.example input[type=search] {
+  form.searchbar input[type=search] {
     padding: 10px;
     font-size: 17px;
     border: 1px solid grey;
     outline: none;
-    width: 30rem;
+    width: 35rem;
   }
   
-  form.example button {
+  form.searchbar select {
+    width: 40%;
+  }
+
+  form.searchbar button {
     width: 10%;
     padding: 10px;
     background: #2196F3;
@@ -38,7 +42,7 @@ padding:8px;
     cursor: pointer;
   }
   
-  form.example button:hover {
+  form.searchbar button:hover {
     background: #0b7dda;
   }
 

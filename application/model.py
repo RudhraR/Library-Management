@@ -29,8 +29,7 @@ class Book(db.Model):
     return_date = db.Column(db.DateTime())
     # price = db.Column(db.Float(), nullable=False)
     section_id = db.Column(db.Integer(), db.ForeignKey('section.section_id'), nullable=False)
-    feedback = db.Column(db.String())
-    rating = db.Column(db.Float())
+    rating = db.Column(db.String())
     book_image = db.Column(db.String())
     # user_id = db.Column(db.Integer, db.ForeignKey('user.user_id'))
 
@@ -59,6 +58,14 @@ class Book_access(db.Model):
     request_date = db.Column(db.DateTime())
     admin_approved_date = db.Column(db.DateTime())
     return_date = db.Column(db.DateTime())
+
+class User_Feedback(db.Model):
+    __tablename__="user_feedback"
+    feedback_id = db.Column(db.Integer(), primary_key=True, autoincrement = True)
+    user_id = db.Column(db.Integer(), db.ForeignKey('user.user_id'))
+    book_id = db.Column(db.Integer(), db.ForeignKey('book.book_id'))
+    rating = db.Column(db.Integer())
+    user_feedback = db.Column(db.String())
 
 class Cart(db.Model):
     cart_id = db.Column(db.Integer(), primary_key=True)

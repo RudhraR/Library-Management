@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+{%block title%}
+Search results
+{%endblock%}
+{%block content%}
+
+<div class="display_books"><br>
+    <h4 style="text-align:center;color:gray"> Search Results </h4><br>
+    <div class="container">
+{%if search_results%}
+    {%if search_param == "section" %}
+        {%for section in search_results%}
+                <div class="card bg-light border-secondary">
+                <h5 class="card-header">{{section.section_name}}</h5>
+                <div class="card-body">
+                <div class="row">
+        {%if section.books == None %}
+                <em>There are no books added in this section right now..</em>
+        {%else%}
+                    {% for book in section.books %}
+                    <div class="books-list col-sm-3">
+                        <div class="card" style="width: 13rem;">
+                            <img class="card-img-top" src="{{book.book_image}}" alt="{{book.book_name}}"
+                                style="height: 250px; width: 207px;">
+                            <div class="card-body" style="font-size:15px;">
+                                <a href="{{url_for('book_details',book_id=book.book_id)}}">{{book.book_name}}</a><br>
+                                <p class="card-text" style="font-size:12px;">
+                                    Author: {{book.author}}<br>
+                                    Rating:
+                                    {%if book.rating%}
+                                    {{book.rating}}/5
+                                    {%else%}
+                                    <em>No ratings yet</em>
+                                    {%endif%}
+                                </p>
+                            </div>
+                        </div>
+                    </div>{% endfor %}
+        {%endif%}
+                </div>
+            </div>
+        </div><br>{%endfor%}
+        
+    {%elif search_param=="book"%}     
+        <div class="row">   
+        {% for book in search_results %}
+          <div class="books-list col-sm-3">
+            <div class="card" style="width: 13rem;">
+              <img class="card-img-top" src="{{book.book_image}}" alt="{{book.book_name}}"
+                style="height: 250px; width: 207px;">
+              <div class="card-body" style="font-size:15px;">
+                <a href="{{url_for('book_details',book_id=book.book_id)}}">{{book.book_name}}</a><br>
+                <p class="card-text" style="font-size:12px;">
+                  Author: {{book.author}}<br>
+                  Rating:
+                  {%if book.rating%}
+                  {{book.rating}}/5
+                  {%else%}
+                  <em>No ratings yet</em>
+                  {%endif%}
+                </p>
+            </div></div></div>
+            {%endfor%}</div>
+    {%endif%}
+{%else%}
+<div class="text-center">
+        <em>Sorry! There are no books/sections available with your search query. Try some other search terms.</em>
+    </div>
+{%endif%}
+    </div>
+</div>
+
+{%endblock%}

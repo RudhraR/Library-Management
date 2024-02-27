@@ -1,60 +1,82 @@
 <nav class="navbar navbar-expand-lg">
-    <div class="container-fluid">
-      <!--<a class="navbar-brand rounded" href="{{url_for('home')}}">BookMate</a>-->
-      <a href="{{url_for('home')}}">
-        <img src="../static/IMG/logo.png" style="height: 70px; width: 110px;" class="rounded">
-      </a>
-      <div class="collapse navbar-collapse" id="navbarSupportedContent">
-        <ul class="navbar-nav mr-auto mb-2 mb-lg-0">
-            <li class="nav-item dropdown">
-                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                  Browse books by Category
-                </a>
-                <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-                  {%for section in sections%}
-                    <li><a class="dropdown-item" href="#">{{section.section_name}}</a></li>
-                  {%endfor%}
-                </ul>
-              </li>
-            </ul>
-            </div>
-        <div class="example mx-auto order-0 w-50">    
-        <form class="example d-flex">
-            <input type="search" placeholder="Search for books">
-            <button type="submit"><i class="fa fa-search"></i></button>
+  <div class="container-fluid">
+    <!--<a class="navbar-brand rounded" href="{{url_for('home')}}">BookMate</a>-->
+    <a href="{{url_for('home')}}">
+      <img src="../static/IMG/logo.png" style="height: 70px; width: 110px;" class="rounded">
+    </a>
+    <!-- <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav mr-auto mb-2 mb-lg-0">
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown"
+            aria-expanded="false">
+            Browse books by Category
+          </a>
+          <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+            {%for section in sections%}
+            <li><a class="dropdown-item" href="#">{{section.section_name}}</a></li>
+            {%endfor%}
+          </ul>
+        </li>
+      </ul>
+    </div> -->
+    <div class="navbar-nav mr-auto mb-2 mb-lg-0">
+    <div class="searchbar mx-auto order-0 w-50 input-group">
+      <form class="searchbar d-flex" method="post" action="{{url_for('search')}}">
+      <select class="form-select searchbar" id="search_by" name="search_by">
+        <option disabled><u>Search e-books by</u></option>
+        <option value="book_name" selected>Book Name</option>
+        <option value="book_section">Section</option>
+        <option value="author">Author</option><br>
+        <option disabled></option>
+        <option disabled>Search for section</option>
+        <option value="search_section">Section Name</option>
+      </select>
+      <input type="search" placeholder="Search" id="search_input" name="search_input">
+        <button type="submit"><i class="fa fa-search"></i></button>
       </form>
-      </div>
-      <div class="navbar-collapse w-25 justify-content-end" style="margin-right:10px">
-        <ul class="navbar-nav">
-            <li class="nav-item dropdown">
-                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                    <i class="bi bi-person-circle" style="font-size: 22px;"></i>
-                  </a>
-                  <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-                    {%if user.role=="librarian"%}
-                    <li><a class="dropdown-item" href="{{url_for('add_books')}}">Add new books</a></li>
-                    <li><a class="dropdown-item" href="{{url_for('section_management')}}">Manage sections</a></li>
-                    <li><a class="dropdown-item" href="{{url_for('pending_approvals')}}">Pending approvals</a></li>
-                    <li><a class="dropdown-item" href="{{url_for('logout')}}">Logout</li>
-                  </ul>
-            </li>
-            &nbsp;
-            <li class="nav-item">
-                <a class = "btn btn-warning" href="{{url_for('home')}}" role="button" style="width:10rem;">
-                    <i class="bi bi-journals" style="font-size: 20px;"></i> Track status</button></a>
-            </li>
-            {%else%}
-                  <li><a class="dropdown-item" href="{{url_for('user_profile')}}">Profile</a></li>
-                  <li><a class="dropdown-item" href="{{url_for('logout')}}">Logout</li>
-                  </ul>
-              </li>
-              &nbsp;
-                <li class="nav-item">
-                    <a class = "btn btn-warning" href="{{url_for('home')}}" role="button" style="width:6rem;">
-                        <i class="bi bi-cart4" style="font-size: 20px;"></i> Cart</button></a>
-                </li>
-            {%endif%}
-        </ul>
     </div>
-</div>
+    </div>
+
+    <!-- <div class="example mx-auto order-0 w-50">
+      <form class="example d-flex">
+
+        <input type="search" placeholder="Search for books">
+        <button type="submit"><i class="fa fa-search"></i></button>
+      </form>
+    </div> -->
+    <div class="navbar-collapse w-25 justify-content-end" style="margin-right:10px">
+      <ul class="navbar-nav">
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown"
+            aria-expanded="false">
+            <i class="bi bi-person-circle" style="font-size: 22px;"></i>
+          </a>
+          <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+            {%if user.role=="librarian"%}
+            <li><a class="dropdown-item" href="{{url_for('add_books')}}">Add new books</a></li>
+            <li><a class="dropdown-item" href="{{url_for('section_management')}}">Manage sections</a></li>
+            <li><a class="dropdown-item" href="{{url_for('user_management')}}">User Management</a></li>
+            <li><a class="dropdown-item" href="{{url_for('logout')}}">Logout</li>
+          </ul>
+        </li>
+        &nbsp;
+        <li class="nav-item">
+          <a class="btn btn-warning" href="{{url_for('home')}}" role="button" style="width:10rem;">
+            <i class="bi bi-file-earmark-bar-graph" style="font-size: 21px;"></i> Dashboard</button></a>
+        </li>
+        {%else%}
+        <!--<li><a class="dropdown-item" href="{{url_for('user_profile')}}">Profile</a></li>-->
+        <li><a class="dropdown-item" href="{{url_for('user_books')}}">My books</a></li>
+        <li><a class="dropdown-item" href="{{url_for('logout')}}">Logout</li>
+      </ul>
+      </li>
+      &nbsp;
+      <li class="nav-item">
+        <a class="btn btn-warning" href="{{url_for('home')}}" role="button" style="width:6rem;">
+          <i class="bi bi-cart4" style="font-size: 20px;"></i> Cart</button></a>
+      </li>
+      {%endif%}
+      </ul>
+    </div>
+  </div>
 </nav>

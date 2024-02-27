@@ -1,0 +1,147 @@
+{% extends "base.html" %}
+{%block title%}
+Pending approvals
+{%endblock%}
+{%block content%}
+  
+     <div class="container" style="margin-top:20px;">
+        <div class="row">
+          <div class="col"></div>
+          <div class="col-10">
+            <div class="card">
+              <div class="card-header">
+                <h5>Pending approvals</h5>
+              </div>
+              <div class="card-body">
+              <table class="table">
+                <thead>
+                  <tr style="text-align:center;">
+                    <th scope="col">#</th>
+                    <th scope="col">User Name</th>
+                    <th scope="col">User e-mail</th>
+                    <th scope="col">Book Name</th>
+                    <th scope="col">Book ID</th>
+                    <th scope="col" style="text-align:left;">Approval Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {%if pending_requests %}  
+                    {% for request in pending_requests %}
+                    <tr style="text-align:center;">
+                    <th scope="row">{{loop.index}}</th>
+                    <td>{{request[1]}}</td>
+                    <td>{{request[2]}}</td>
+                    <td>{{request[4]}}</td>
+                    <td>{{request[3]}}</td>
+                    <td >
+                        <form class="row g-3 needs-validation" method="post" action="{{url_for('admin_approval', access_id=request[5])}}" novalidate>
+                            <div class="col-auto">
+                                <select class="form-control" name="approved_status" id="approval_validation" required>
+                                    <option selected disabled value="">Choose</option>
+                                    <option value="Approve">Approve</option>
+                                    <option value="Reject">Reject</option>
+                                  </select>
+                                  <div class="invalid-feedback">
+                                    Please choose Approval Action before submitting.
+                                  </div>
+                            </div>
+                            <div class="col-auto">
+                                <button type="submit" class="btn btn-primary mb-3">Submit</button>
+                            </div>
+                        </form>
+                    </td>
+                  </tr>
+                  {% endfor %}
+                  {%else%}
+                  <tr>
+                    <td class="text-center" colspan="6">
+                    <em>There are no pending requests right now!</em>
+                    </td>
+                  </tr>
+                  {%endif%}
+                </tbody>
+              </table></div></div>
+            </div>
+          <div class="col"></div>
+        </div>
+      </div>
+
+
+      <!--Status of e-books and user it is issued to-->
+
+      <div class="container" style="margin-top:20px;">
+        <div class="row">
+          <div class="col"></div>
+          <div class="col-10">
+            <div class="card">
+              <div class="card-header">
+                <h5>Status of the books issued</h5>
+              </div>
+              <div class="card-body">
+              <table class="table">
+                <thead>
+                  <tr style="text-align:center;">
+                    <th scope="col" style="width: 5%">#</th>
+                    <th scope="col"  nowrap="nowrap" style="width: 10%">User Name</th>
+                    <th scope="col" style="width: 35%; text-align:center;">Book Name</th>
+                    <th scope="col" nowrap="nowrap" style="width: 10%">Book ID</th>
+                    <th scope="col" style="width: 15%">Issued Date</th>
+                    <th scope="col" style="width: 15%">Return date</th>
+                    <th scope="col" style="width: 10%">Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {%if status %}  
+                    {% for request in status %}
+                    <tr style="text-align:center;">
+                    <th scope="row">{{loop.index}}</th>
+                    <td>{{request[1]}}</td>
+                    <td>{{request[2]}}</td>
+                    <td>{{request[3]}}</td>
+                    <td>{{request[4]}}</td>
+                    <td>{{request[5]}}</td>
+                    <td>
+                      <a href="{{url_for('user_access_revoke',book_id=request[3], user_id=request[6])}}" class="btn btn-danger">Revoke</a>
+                    </td>
+                  </tr>
+                  {% endfor %}
+                  {%else%}
+                  <tr>
+                    <td class="text-center" colspan="7">
+                    <em>There are no books issued to any users right now!</em>
+                    </td>
+                  </tr>
+                  {%endif%}
+                </tbody>
+              </table></div></div>
+            </div>
+          <div class="col"></div>
+        </div>
+      </div>
+
+
+
+<script>
+    // Example starter JavaScript for disabling form submissions if there are invalid fields
+(function () {
+    'use strict'
+  
+    // Fetch all the forms we want to apply custom Bootstrap validation styles to
+    var forms = document.querySelectorAll('.needs-validation')
+  
+    // Loop over them and prevent submission
+    Array.prototype.slice.call(forms)
+      .forEach(function (form) {
+        form.addEventListener('submit', function (event) {
+          if (!form.checkValidity()) {
+            event.preventDefault()
+            event.stopPropagation()
+          }
+  
+          form.classList.add('was-validated')
+        }, false)
+      })
+  })()
+</script>
+
+{%endblock%}

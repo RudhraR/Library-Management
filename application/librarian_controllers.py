@@ -124,21 +124,27 @@ def user_access_revoke(book_id,user_id):
     access_request = Book_access.query.filter_by(user_id=user_id, book_id=book_id).first()
     db.session.delete(access_request)
     db.session.commit()
-    return redirect("/home")
+    return redirect("/user_management")
 
-@app.route("/pending_approvals", methods=["GET","POST"])
+@app.route("/user_management", methods=["GET","POST"])
 @login_required
 @librarian_only
-def pending_approvals():
+def user_management():
     pending_requests = Book_access.query.join(
         Book, Book_access.book_id == Book.book_id).join(
         User, Book_access.user_id == User.user_id).filter(
             Book_access.admin_approval == "Pending").add_columns(
                 User.user_name, User.user_mail, 
                 Book.book_id, Book.book_name, Book_access.access_id).all() 
-    # if pending_requests == None:
-    #     requests
-    return render_template("librarian/pending_approvals.html", pending_requests = pending_requests, sections=Section.query.all(), user=current_user)
+
+    status = Book_access.query.join(
+        Book, Book_access.book_id == Book.book_id).join(
+        User, Book_access.user_id == User.user_id).filter(
+            Book_access.admin_approval == "Approved").add_columns(
+                User.user_name, Book.book_name, Book.book_id,
+                Book_access.admin_approved_date, Book_access.return_date, User.user_id).all()
+    return render_template("librarian/user_management.html", pending_requests = pending_requests, 
+                           status=status, sections=Section.query.all(), user=current_user)
     
 @app.route("/admin_approval/<int:access_id>", methods=["POST"])
 @login_required
@@ -154,7 +160,7 @@ def admin_approval(access_id):
         elif(approved_status == "Reject"):
             db.session.delete(access_request)
         db.session.commit()
-        return redirect("/pending_approvals")
+        return redirect("/user_management")
     
 @app.route("/section_management")
 @login_required
