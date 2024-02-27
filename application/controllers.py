@@ -73,37 +73,6 @@ def home():
         sections= Section.query.all()
         return render_template("home.html", sections=sections, user=current_user)
 
-@app.route("/user_profile", methods= ["GET"])
-@login_required
-def user_profile():
-    if request.method == "GET":
-        user_logined_id = current_user.user_id
-        user = User.query.filter_by(user_id=user_logined_id).first()
-        posts= Posts.query.filter_by(user_id = user_logined_id).all()
-        return render_template("other/profile.html", user=current_user,  posts=posts)
-
-@app.route("/edit_profile", methods=["GET", "POST"])
-@login_required
-def edit_profile():
-    if request.method == "GET":
-        user_logined_id = current_user.user_id
-        user = User.query.filter_by(user_id = user_logined_id).first()
-        return render_template("other/edit_profile.html", user=user)
-    if request.method == "POST":
-        user_name = request.form["user_name"]
-        user_bio = request.form["user_bio"]
-        profile_pic = request.files["profile_pic"]
-        profile_pic.save("static/images/" + profile_pic.filename)
-
-        user_logined_id = current_user.user_id
-        user = User.query.filter_by(user_id = user_logined_id).first()
-        user.user_name = user_name
-        user.user_bio = user_bio
-        user.profile_img_path = "../static/images/" + profile_pic.filename
-        db.session.commit()
-        return redirect('/user_profile')
-
-
 @app.route("/book_details/<int:book_id>", methods = ["GET"])
 @login_required
 def book_details(book_id):
@@ -175,15 +144,14 @@ def user_book_return(book_id):
     db.session.commit()
     return redirect("/book_details/"+str(book_id))
 
-@app.route("/user_books", methods=["GET","POST"])
+@app.route("/user_books", methods=["GET"])
 @login_required
 def user_books():
-    # access_request = Book_access.query.filter_by(user_id=current_user.user_id).all()
     pending_requests = Book_access.query.join(
         Book, Book_access.book_id == Book.book_id).filter(
             Book_access.admin_approval == "Pending", Book_access.user_id == current_user.user_id).add_columns(
                 Book.book_name, Book.book_id).all() 
-    # pending_requests = Book_access.query.filter_by(user_id=current_user.user_id, status="Pending").all()
+    
     books_to_read = Book_access.query.join(
         Book, Book_access.book_id == Book.book_id).filter(
             Book_access.user_id == current_user.user_id, Book_access.admin_approval == "Approved").add_columns(
@@ -234,3 +202,9 @@ def search():
             search_param = "book"
         return render_template('search.html', search_results=search_results, 
                                search_param=search_param, user=current_user)
+        
+        
+@app.route("/cart", methods=["GET","POST"])
+@login_required
+def cart():
+    return render_template('user/cart.html',user=current_user)
