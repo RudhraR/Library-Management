@@ -108,8 +108,9 @@ def edit_book(book_id):
 def delete_book(book_id):
     book = Book.query.filter_by(book_id=book_id).first()
     if book:
-        os.remove(book.content[3:])
-        os.remove(book.book_image[3:])
+        if book.content != "../static/books/default_book.pdf":
+            os.remove(book.content[3:])
+            os.remove(book.book_image[3:])
         db.session.delete(book)
         db.session.commit()
     else:
@@ -143,8 +144,8 @@ def user_management():
         Book, Book_access.book_id == Book.book_id).join(
         User, Book_access.user_id == User.user_id).filter(
             Book_access.admin_approval == "Pending").add_columns(
-                User.user_name, User.user_mail, 
-                Book.book_id, Book.book_name, Book_access.access_id).all() 
+                User.user_name, User.user_mail, Book.book_name, Book.book_id, Book_access.request_date,
+                 Book_access.access_id).all() 
 
     status = Book_access.query.join(
         Book, Book_access.book_id == Book.book_id).join(
@@ -184,8 +185,8 @@ def add_section():
         if request.method=="POST":
             section_name = request.form['section_name']
             section_desc = request.form['section_desc']
-            dateTimeObj = datetime.now()
-            date_created = dateTimeObj.date()
+            date_created = datetime.now()
+            
             if section_name!="":
                 new_section = Section(section_name=section_name, section_desc=section_desc, date_created=date_created)
                 db.session.add(new_section)

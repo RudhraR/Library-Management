@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 {%block title%}
-Pending approvals
+User Management
 {%endblock%}
 {%block content%}
   
@@ -16,12 +16,13 @@ Pending approvals
               <table class="table">
                 <thead>
                   <tr style="text-align:center;">
-                    <th scope="col">#</th>
-                    <th scope="col">User Name</th>
-                    <th scope="col">User e-mail</th>
-                    <th scope="col">Book Name</th>
-                    <th scope="col">Book ID</th>
-                    <th scope="col" style="text-align:left;">Approval Action</th>
+                    <th scope="col" style="width: 2%">#</th>
+                    <th scope="col" nowrap="nowrap" style="width: 8%">User Name</th>
+                    <th scope="col" style="width: 15%">User e-mail</th>
+                    <th scope="col" style="width: 30%">Book Name</th>
+                    <th scope="col" nowrap="nowrap" style="width: 5%">Book ID</th>
+                    <th scope="col" nowrap="nowrap" style="width: 10%">Request Date</th>
+                    <th scope="col" style="width: 30%; ">Action</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -31,10 +32,11 @@ Pending approvals
                     <th scope="row">{{loop.index}}</th>
                     <td>{{request[1]}}</td>
                     <td>{{request[2]}}</td>
-                    <td>{{request[4]}}</td>
                     <td>{{request[3]}}</td>
+                    <td>{{request[4]}}</td>
+                    <td>{{request[5].strftime('%d/%m/%Y (%I:%M:%S %p)')}}</td>
                     <td >
-                        <form class="row g-3 needs-validation" method="post" action="{{url_for('admin_approval', access_id=request[5])}}" novalidate>
+                        <form class="row g-3 needs-validation" method="post" action="{{url_for('admin_approval', access_id=request[6])}}" novalidate>
                             <div class="col-auto">
                                 <select class="form-control" name="approved_status" id="approval_validation" required>
                                     <option selected disabled value="">Choose</option>
@@ -54,7 +56,7 @@ Pending approvals
                   {% endfor %}
                   {%else%}
                   <tr>
-                    <td class="text-center" colspan="6">
+                    <td class="text-center text-muted" colspan="7">
                     <em>There are no pending requests right now!</em>
                     </td>
                   </tr>
@@ -98,8 +100,8 @@ Pending approvals
                     <td>{{request[1]}}</td>
                     <td>{{request[2]}}</td>
                     <td>{{request[3]}}</td>
-                    <td>{{request[4]}}</td>
-                    <td>{{request[5]}}</td>
+                    <td>{{request[4].strftime('%d/%m/%Y (%I:%M:%S %p)')}}</td>
+                    <td>{{request[5].strftime('%d/%m/%Y (%I:%M:%S %p)')}}</td>
                     <td>
                       <a href="{{url_for('user_access_revoke',book_id=request[3], user_id=request[6])}}" class="btn btn-danger">Revoke</a>
                     </td>
@@ -107,7 +109,7 @@ Pending approvals
                   {% endfor %}
                   {%else%}
                   <tr>
-                    <td class="text-center" colspan="7">
+                    <td class="text-center text-muted" colspan="7">
                     <em>There are no books issued to any users right now!</em>
                     </td>
                   </tr>

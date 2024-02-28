@@ -8,6 +8,11 @@ class User(db.Model,UserMixin):
     user_name = db.Column(db.String())
     password = db.Column(db.String(80), nullable = False)
     role = db.Column(db.String(20), nullable = False)
+    
+    book_access = db.relationship("Book_access", cascade="all, delete")
+    feedback = db.relationship("User_Feedback", cascade="all, delete")
+    cart = db.relationship("Cart", cascade="all, delete")
+    books_purchased = db.relationship("Books_purchased", cascade="all, delete")
 
     def __init__(self,name,email,password,role):
         self.user_name = name
@@ -42,7 +47,7 @@ class Section(db.Model):
     section_id = db.Column(db.Integer(), primary_key=True)
     section_name = db.Column(db.String(40), nullable = False)
     section_desc = db.Column(db.String())
-    date_created = db.Column(db.Date())
+    date_created = db.Column(db.DateTime())
     books = db.relationship('Book', backref = 'section', lazy = True)
 
 class Book_access(db.Model):

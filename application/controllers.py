@@ -243,7 +243,7 @@ def cart():
                 Book.book_name, Book.author, Book.price, Cart.cart_id).all() 
         if cart_items:
             total_price= sum([item.price for item in cart_items])
-        return render_template('user/cart.html',user=current_user, cart_items=cart_items, total_price=total_price)    
+            return render_template('user/cart.html',user=current_user, cart_items=cart_items, total_price=total_price)    
     return render_template('user/cart.html',user=current_user)
 
 @app.route("/purchase", methods=["POST"])

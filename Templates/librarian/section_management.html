@@ -103,7 +103,7 @@ Librarian home
                           </label>
                           <div class="col-sm-6">
                             <input type="text" readonly class="form-control-plaintext" id="date_created"
-                              value="{{section.date_created}}">
+                              value="{{section.date_created.strftime('%d/%m/%Y (%I:%M:%S %p)')}}">
                           </div>
                         </div>
                     </div>
@@ -118,7 +118,7 @@ Librarian home
               {% endfor %}
               {%else%}
                   <tr>
-                    <td class="text-center" colspan="5">
+                    <td class="text-center text-muted" colspan="5">
                     <em>There are no sections added right now.</em>
                     </td>
                   </tr>

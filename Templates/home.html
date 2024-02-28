@@ -84,14 +84,16 @@ User homepage
             </div>
           </div>{% endfor %}
           {%else%}
+          <div class="text-center text-muted">
           <em>There are no books added in this section right now..</em>
+          </div>
           {%endif%}
         </div>
       </div>
     </div><br>{%endfor%}
   </div>
   {%else%}
-  <div class="text-center">
+  <div class="text-center text-muted">
     <em>There are no books/sections available right now.</em>
 </div>
   {%endif%}  

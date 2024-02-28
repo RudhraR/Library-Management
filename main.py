@@ -1,8 +1,10 @@
 from flask import Flask, request, render_template
+from flask_restful import Api
 from application.database import db
 from application.model import *
 import os
 from application.config import LocalDevelopmentConfig
+from application.api import *
 
 app = None
 
@@ -18,6 +20,10 @@ def create_app():
     return app 
 
 app = create_app()
+
+api = Api(app)
+api.init_app(app)
+
 app.secret_key="123456789"
 
 from application.controllers import *
@@ -28,6 +34,14 @@ def addlibrarian():
     user = User(name = "librarian", email = "librarian@gmail.com", password = "adminpwd", role ="librarian")
     db.session.add(user)
     db.session.commit()
+
+api.add_resource(AllUserAPI, '/api/user')
+api.add_resource(UserAPI,'/api/user/<int:user_id>')
+api.add_resource(AllBookAPI,'/api/book')
+api.add_resource(BookAPI,'/api/book/<int:book_id>')
+api.add_resource(AllSectionAPI,'/api/section')
+api.add_resource(SectionAPI,'/api/section/<int:section_id>')
+api.add_resource(Section_BooksAPI,'/api/section_books/<int:section_id>')
 
 with app.app_context():
     db.create_all()

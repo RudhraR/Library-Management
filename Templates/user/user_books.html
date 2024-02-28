@@ -34,7 +34,7 @@ My books and Book requests
                   {% endfor %}
                   {%else%}
                   <tr>
-                    <td class="text-center" colspan="6">
+                    <td class="text-center text-muted" colspan="6">
                     <em>There are no pending requests right now!</em>
                     </td>
                   </tr>
@@ -73,8 +73,8 @@ My books and Book requests
                     <tr style="text-align:center;">
                     <th scope="row">{{loop.index}}</th>
                     <td><a href="{{url_for('book_details',book_id=request[2])}}">{{request[1]}}</a></td>
-                    <td>{{request[3]}}</td>
-                    <td>{{request[4]}}</td>
+                    <td>{{request[3].strftime('%d/%m/%Y (%I:%M:%S %p)')}}</td>
+                    <td>{{request[4].strftime('%d/%m/%Y (%I:%M:%S %p)')}}</td>
                     <td>
                         <a href="{{url_for('read_book',book_id=request[2])}}" class="btn btn-primary btn">Read</a>
                         <a href="{{url_for('user_book_return',book_id=request[2])}}" class="btn btn-danger btn">Return</a>
@@ -83,7 +83,7 @@ My books and Book requests
                   {% endfor %}
                   {%else%}
                   <tr>
-                    <td class="text-center" colspan="7">
+                    <td class="text-center text-muted" colspan="7">
                     <em>There are no books to read right now!</em>
                     </td>
                   </tr>
