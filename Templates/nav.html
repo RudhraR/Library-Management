@@ -39,12 +39,13 @@
         </li>
         &nbsp;
         <li class="nav-item">
-          <a class="btn btn-warning" href="{{url_for('home')}}" role="button" style="width:10rem;">
+          <a class="btn btn-warning" href="{{url_for('dashboard')}}" role="button" style="width:10rem;">
             <i class="bi bi-file-earmark-bar-graph" style="font-size: 21px;"></i> Dashboard</button></a>
         </li>
         {%else%}
         <li><a class="dropdown-item" href="{{url_for('user_books')}}">Free books/requests</a></li>
         <li><a class="dropdown-item" href="{{url_for('purchased_books')}}">Purchased books</a></li>
+        <li><a class="dropdown-item" href="{{url_for('dashboard')}}">Book Stats</a></li>
         <li><a class="dropdown-item" href="{{url_for('logout')}}">Logout</li>
       </ul>
       </li>

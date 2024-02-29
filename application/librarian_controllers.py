@@ -272,3 +272,45 @@ def sectionwise_books(section_id):
     if request.method=="POST":
         pass
         return redirect("/section_management")
+    
+@app.route("/dashboard")
+@login_required
+def dashboard():
+
+#librarian dashboard: issued books
+    issued_books = db.session.query(Book.book_id, Book.book_name, 
+                                    db.func.count(Book_access.admin_approval).label('book_count')).join(
+                                        Book_access, Book.book_id == Book_access.book_id).filter(
+                                            Book_access.admin_approval == "Approved").group_by(
+                                                Book.book_id, Book.book_name).all()
+                                 
+    issued_books_list = []
+    issued_books_count = []
+    for book in issued_books:
+        issued_books_list.append(book.book_name)
+        issued_books_count.append(book.book_count)
+
+#librarian and user dashboard: Section distribution  
+    allsections = Section.query.all()  
+    section_names = []
+    section_book_count = []
+    for section in allsections:
+        section_names.append(section.section_name)
+        section_book_count.append(len(section.books))
+
+#User Dashboard: Various books status like purchased_books, books_to_read, book_requests
+    book_type_names = ["Purchased books", "Books available to read", "Book requests", "Returned/Completed books"]
+    purchased_count = Books_purchased.query.filter_by(user_id = current_user.user_id).count()
+    books_to_read = Book_access.query.filter_by(user_id = current_user.user_id, 
+                                                admin_approval="Approved").count()
+    book_requests = Book_access.query.filter_by(user_id = current_user.user_id, 
+                                                admin_approval="Pending").count()
+    returned_books = Book_access.query.filter_by(user_id = current_user.user_id, 
+                                                admin_approval="Returned").count()
+    book_type_count = [purchased_count, books_to_read, book_requests, returned_books]
+    
+    
+    return render_template("dashboard.html", user=current_user,
+                           issued_books_list=issued_books_list, issued_books_count=issued_books_count,
+                           section_names=section_names,section_book_count=section_book_count,
+                           book_type_names = book_type_names, book_type_count=book_type_count) 

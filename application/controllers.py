@@ -143,7 +143,9 @@ def read_book(book_id):
 def user_book_return(book_id):
     user_logined_id = current_user.user_id
     access_request = Book_access.query.filter_by(user_id=user_logined_id, book_id=book_id).first()
-    db.session.delete(access_request)
+    access_request.admin_approval = "Returned"
+    access_request.return_date = datetime.now()
+    flash("This book is returned by you, successfully! ", "success")
     db.session.commit()
     return redirect("/book_details/"+str(book_id))
 
@@ -160,15 +162,15 @@ def user_books():
             Book_access.user_id == current_user.user_id, Book_access.admin_approval == "Approved").add_columns(
                 Book.book_name, Book.book_id,
                 Book_access.admin_approved_date, Book_access.return_date).all()
-            
-    purchased_books = Books_purchased.query.join(
-        Book, Books_purchased.book_id == Book.book_id).filter(
-            Books_purchased.user_id == current_user.user_id).add_columns(
-                Book.book_name, Book.author, Book.content).all()
+    
+    books_returned = Book_access.query.join(
+        Book, Book_access.book_id == Book.book_id).filter(
+            Book_access.admin_approval == "Returned", Book_access.user_id == current_user.user_id).add_columns(
+                Book.book_name, Book.book_id, Book_access.return_date).all() 
         
     if request.method == "GET":
         return render_template("user/user_books.html", pending_requests=pending_requests, 
-                               books_to_read= books_to_read, purchased_books=purchased_books, user=current_user)
+                               books_to_read= books_to_read, books_returned=books_returned, user=current_user)
     
 @app.route("/user_feedback/<int:book_id>", methods=["POST"])
 @login_required

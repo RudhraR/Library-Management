@@ -1,0 +1,152 @@
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.0.0-rc"></script>
+{% extends "base.html" %}
+{%block title%}
+{%if user.role == "Librarian"%}
+Librarian Dashboard
+{%else%}
+User Dashboard
+{%endif%}
+{%endblock%}
+
+{%block content%}
+
+<div class="container" style="margin-top:10px;">
+    <div class="row">
+        <div class="books_issued col-md-8">
+            <div class="card bg-light border-secondary"> 
+                {%if user.role == "librarian"%}
+                    <h5 class="card-header">Books issued to the users</h5>
+                    <div class="card-body">
+                    <div>
+                        <canvas id="books_issued"></canvas>
+                    </div></div>
+                {%else%}
+                <h5 class="card-header">Your summary of books/requests</h5>
+                <div class="card-body">
+                <div>
+                    <canvas id="user_books"></canvas>
+                </div></div>
+                {%endif%}
+            </div>
+        </div>
+        <div class="section_distribution col-md-4">
+            <div class="card bg-light border-secondary" >
+                <h5 class="card-header">Section distribution (No. of books)</h5>
+                <div class="card-body">
+                    <div>
+                        <canvas id="section_distribution"></canvas>
+                    </div></div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    const ctx = document.getElementById('books_issued');
+    var issued_books= "{{issued_books_list}}".replaceAll('&#39;','').replace('[','').replace(']','');
+    issued_book_names = issued_books.split(', ');
+    
+    var issued_books_count = "{{issued_books_count}}".replace('[','').replace(']','');
+    issued_books_count = issued_books_count.split(', ');
+    console.log(issued_books_count)
+    new Chart(ctx, {
+        plugins: [ChartDataLabels],
+      type: 'bar',
+      data: {
+        labels: issued_book_names,
+        datasets: [{
+          label: 'Books issued to the users',
+          data: issued_books_count,
+          borderWidth: 1,
+          barThickness: 20
+        }]
+      },
+      options: {
+        indexAxis: 'y',
+        plugins: {
+            legend: {
+                display: false
+            }
+        },
+        scales: {
+            x: {
+                title: {
+                    display: true,
+                    text: 'No. of users' // Name of x-axis
+                },
+                ticks: {
+                    beginAtZero: true,
+                    stepSize: 1
+                }
+            }
+           
+        }
+      }
+    });
+  </script>
+
+  <script>
+    const ch = document.getElementById('user_books');
+    var book_type_names= "{{book_type_names}}".replaceAll('&#39;','').replace('[','').replace(']','');
+    book_type_names = book_type_names.split(', ');
+    
+    var book_type_count = "{{book_type_count}}".replace('[','').replace(']','');
+    book_type_count = book_type_count.split(', ');
+    console.log(book_type_count)
+    new Chart(ch, {
+        plugins: [ChartDataLabels],
+      type: 'bar',
+      data: {
+        labels: book_type_names,
+        datasets: [{
+          label: 'Books/Requests',
+          data: book_type_count,
+          borderWidth: 1,
+          barThickness: 20
+        }]
+      },
+      options: {
+        indexAxis: 'y',
+        plugins: {
+            legend: {
+                display: false
+            }
+        },
+        scales: {
+            x: {
+                title: {
+                    display: true,
+                    text: 'No. of books'
+                },
+                ticks: {
+                    beginAtZero: true,
+                    stepSize: 1
+                }
+            }
+           
+        }
+      }
+    });
+  </script>
+
+
+  <script>
+    const ct = document.getElementById('section_distribution');
+    var section_names= "{{section_names}}".replaceAll('&#39;','').replace('[','').replace(']','');
+    section_names = section_names.split(', ');
+    
+    var section_book_count = "{{section_book_count}}".replace('[','').replace(']','');
+    section_book_count = section_book_count.split(', ');
+    console.log(section_names, section_book_count)
+    new Chart(ct, {
+    type: 'doughnut',
+      data: {
+        labels: section_names,
+        datasets: [{
+          data: section_book_count
+        }]
+      }
+    });
+  </script>
+
+{%endblock%}
