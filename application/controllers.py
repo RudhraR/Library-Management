@@ -22,28 +22,33 @@ def register():
         return render_template("user/register.html", user=current_user, page="register")
     if request.method == "POST":
         email = request.form["email"]
+        name = request.form["user_name"]
         existing_email =  User.query.filter_by(user_mail = email).first()
+        existing_name =  User.query.filter_by(user_name = name).first()
         if existing_email:
             flash("Your email is already registered! Kindly proceed with login.", "error")
             return redirect("/login")
-        else:
-            password = request.form["password"]
-            name = request.form["user_name"]
-            hashed_password = bcrypt.generate_password_hash(password)
-            new_user = User(name=name, email = email, password= hashed_password, role= "User")
-            db.session.add(new_user)
-            db.session.commit()
-            flash("You are now registered, Please Login", "success")
-            return redirect('/login')
+        if existing_name:
+            flash("User name already taken! Use some other name.", "error")
+            return redirect("/register")
+        
+        password = request.form["password"]
+        
+        hashed_password = bcrypt.generate_password_hash(password)
+        new_user = User(name=name, email = email, password= hashed_password, role= "User")
+        db.session.add(new_user)
+        db.session.commit()
+        flash("You are now registered, Please Login", "success")
+        return redirect('/login')
 
 @app.route("/login", methods =["GET","POST"])
 def login():
     if request.method == "GET":
         return render_template("user/login.html",user=current_user, page="user_login")
     if request.method == "POST":
-        email = request.form["email"]
+        username = request.form["username"]
         password =  request.form["password"]
-        user =  User.query.filter_by(user_mail = email).first()
+        user =  User.query.filter_by(user_name = username).first()
         if user:
             if user.role != "librarian":
                 if bcrypt.check_password_hash(user.password, password):
@@ -97,8 +102,9 @@ def book_details(book_id):
             
             if user_feedback:
                 feedback_given=True
-            no_of_requests = Book_access.query.filter_by(user_id=user_logined_id).count()
-            if no_of_requests >= 5:
+            no_of_requests = Book_access.query.filter_by(user_id=user_logined_id, admin_approval = "Pending").count()
+            no_of_approved = Book_access.query.filter_by(user_id=user_logined_id, admin_approval = "Approved").count()
+            if (no_of_requests+no_of_approved) >= 5:
                 max_request_reached = True
             if access_request != None:
                 access_status = access_request.admin_approval

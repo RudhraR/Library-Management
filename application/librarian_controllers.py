@@ -31,9 +31,9 @@ def librarian_login():
     if request.method == "GET":
         return render_template("librarian/librarian_login.html", user=current_user, page="librarian_login")
     if request.method == "POST":
-        email = request.form["email"]
+        username = request.form["username"]
         password = request.form["password"]
-        user =  User.query.filter_by(user_mail = email).first()
+        user =  User.query.filter_by(user_name = username).first()
         if (user.role == "librarian"):
             if password == "adminpwd":
                 login_user(user)
@@ -122,8 +122,13 @@ def delete_book(book_id):
 def user_book_request(book_id):
     user_logined_id = current_user.user_id
     request_date = datetime.now()
-    new_access_request = Book_access(book_id=book_id, user_id=user_logined_id, admin_approval="Pending", request_date=request_date)
-    db.session.add(new_access_request)
+    returned_book = Book_access.query.filter_by(book_id=book_id, user_id=user_logined_id, admin_approval="Returned").first()
+    if returned_book:
+        returned_book.request_date = request_date
+        returned_book.admin_approval = "Pending"
+    else:
+        new_access_request = Book_access(book_id=book_id, user_id=user_logined_id, admin_approval="Pending", request_date=request_date)
+        db.session.add(new_access_request)
     db.session.commit()
     return redirect("/book_details/"+str(book_id))
 
@@ -200,13 +205,13 @@ def add_sectionwise_book(section_id):
             sectionwise = Section.query.filter_by(section_id=section_id).first()
             return render_template("librarian/add_books.html", sectionwise=sectionwise, sections=Section.query.all(), user=current_user)
             
-@app.route("/section_action/<int:section_id>", methods=["POST"])
+@app.route("/section_action/<int:section_id>", methods=["GET","POST"])
 @login_required
 @librarian_only
 def section_action(section_id):
+    section = Section.query.filter_by(section_id=section_id).first()
     if request.method=="POST":
-        section_action = request.form["section_action"]
-        section = Section.query.filter_by(section_id=section_id).first()
+        section_action = request.form["section_action"] 
         if section_action == "Edit":
             msg="Edit modal"
             return render_template("librarian/section_management.html", msg=msg, sections=Section.query.all(), current_section=section, user=current_user)
@@ -222,7 +227,10 @@ def section_action(section_id):
         if section_action == "Show": 
             return redirect(url_for('sectionwise_books',section_id=section_id))
         return redirect("/section_management")
-     
+    if request.method == "GET":
+        msg="Details model"
+        return render_template("librarian/section_management.html", msg=msg, sections=Section.query.all(), current_section=section, user=current_user)
+
 @app.route("/edit_section/<int:section_id>", methods=["POST"])
 @login_required
 @librarian_only
@@ -235,7 +243,7 @@ def edit_section(section_id):
             section.section_name = new_section_name
             section.section_desc = new_section_desc
             db.session.commit()
-            flash('Section name updated successfully!', 'success')
+            flash('Section updated successfully!', 'success')
         return redirect("/section_management")
 
 @app.route("/delete_section/<int:section_id>", methods=["GET","POST"])

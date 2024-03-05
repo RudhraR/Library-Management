@@ -19,6 +19,12 @@ Librarian home
     $('#deleteModal').modal('show');
   });
 </script>
+{% elif msg == "Details model" %}
+<script type="text/javascript">
+  $(window).load(function () {
+    $('#DetailsModal').modal('show');
+  });
+</script>
 {%endif%}
 {%endif%}
 
@@ -44,11 +50,11 @@ Librarian home
               <tr>
                 <th scope="row">{{loop.index}}</th>
                 <td>
-                  <button type="button" class="btn btn-sm btn-link" alt="Section details" data-bs-toggle="modal"
+                  <!-- <button type="button" class="btn btn-sm btn-link" alt="Section details" data-bs-toggle="modal"
                     data-bs-target="#section_details">
                     {{section.section_name}}
-                  </button>
-
+                  </button> -->
+                  <a href="{{url_for('section_action', section_id=section.section_id)}}">{{section.section_name}}</a>
                 </td>
                 <td>{{section.section_id}}</td>
                 <td>{{section.books|length}}</td>
@@ -69,52 +75,6 @@ Librarian home
                   </form>
                 </td>
               </tr>
-              <!-- Section details modal -->
-              <div class="modal fade" id="section_details" tabindex="-1" aria-hidden="true">
-                <div class="modal-dialog">
-                  <div class="modal-content">
-                    <div class="modal-header">
-                      <h5 class="modal-title" id="exampleModalLabel">Section details</h5>
-                      <a href="{{url_for('section_management')}}" class="btn btn-close"></a>
-                    </div>
-                    <div class="modal-body">
-                      <form>
-                        <div class="form-group row">
-                          <label for="section_name" class="col-sm-6 col-form-label">
-                            <h6>Section Name</h6>
-                          </label>
-                          <div class="col-sm-6">
-                            <input type="text" readonly class="form-control-plaintext" id="section_name"
-                              value="{{section.section_name}}">
-                          </div>
-                        </div>
-                        <div class="form-group row">
-                          <label for="section_desc" class="col-sm-6 col-form-label">
-                            <h6>Section Description</h6>
-                          </label>
-                          <div class="col-sm-6">
-                            <input type="text" readonly class="form-control-plaintext" id="section_desc"
-                              value="{{section.section_desc}}">
-                          </div>
-                        </div>
-                        <div class="form-group row">
-                          <label for="date_created" class="col-sm-6 col-form-label">
-                            <h6>Date created</h6>
-                          </label>
-                          <div class="col-sm-6">
-                            <input type="text" readonly class="form-control-plaintext" id="date_created"
-                              value="{{section.date_created.strftime('%d/%m/%Y (%I:%M:%S %p)')}}">
-                          </div>
-                        </div>
-                    </div>
-                    <div class="modal-footer">
-                      <a href="{{url_for('section_management')}}" class="btn btn-secondary">Close</a>
-                    </div>
-                    </form>
-                  </div>
-                </div>
-              </div>
-
               {% endfor %}
               {%else%}
                   <tr>
@@ -137,6 +97,53 @@ Librarian home
 </div>
 
 {% if current_section %}
+
+  <!-- Section details modal -->
+  <div class="modal fade" id="DetailsModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">Section details</h5>
+          <a href="{{url_for('section_management')}}" class="btn btn-close"></a>
+        </div>
+        <div class="modal-body">
+          <form>
+            <div class="form-group row">
+              <label for="section_name" class="col-sm-6 col-form-label">
+                <h6>Section Name</h6>
+              </label>
+              <div class="col-sm-6">
+                <input type="text" readonly class="form-control-plaintext" id="section_name"
+                  value="{{current_section.section_name}}">
+              </div>
+            </div>
+            <div class="form-group row">
+              <label for="section_desc" class="col-sm-6 col-form-label">
+                <h6>Section Description</h6>
+              </label>
+              <div class="col-sm-6">
+                <input type="text" readonly class="form-control-plaintext" id="section_desc"
+                  value="{{current_section.section_desc}}">
+              </div>
+            </div>
+            <div class="form-group row">
+              <label for="date_created" class="col-sm-6 col-form-label">
+                <h6>Date created</h6>
+              </label>
+              <div class="col-sm-6">
+                <input type="text" readonly class="form-control-plaintext" id="date_created"
+                  value="{{current_section.date_created.strftime('%d/%m/%Y (%I:%M:%S %p)')}}">
+              </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+          <a href="{{url_for('section_management')}}" class="btn btn-secondary">Close</a>
+        </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
 <!-- Edit modal -->
 <div class="modal fade" id="editModal" tabindex="-1" aria-hidden="true">
   <div class="modal-dialog">
@@ -163,7 +170,7 @@ Librarian home
           </div>
       </div>
       <div class="modal-footer">
-        <button type="submit" class="btn btn-primary mb-2">Update section name</button>
+        <button type="submit" class="btn btn-primary mb-2">Update section</button>
         <a href="{{url_for('section_management')}}" class="btn btn-secondary">Cancel</a>
       </div>
       </form>
