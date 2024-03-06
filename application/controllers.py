@@ -265,6 +265,12 @@ def purchase():
                 new_item = Books_purchased(user_id=current_user.user_id, book_id=item.book_id)
                 db.session.add(new_item)
                 db.session.delete(item)
+                
+                # # deleting existing book_request
+                # existing_request = Book_access.query.filter_by(user_id=current_user.user_id, book_id = item.book_id).first()
+                # if existing_request:
+                #     db.session.delete(existing_request)
+                    
             db.session.commit()
             flash("Your payment is complete. You can now download your purchased e-books.", "success")
             return redirect('/purchased_books')
